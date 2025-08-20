@@ -1,11 +1,6 @@
 // components/Header.js
-import {
-  SignInButton,
-  SignUpButton,
-  SignedIn,
-  SignedOut,
-  UserButton,
-} from "@clerk/nextjs";
+import { SignInButton, SignUpButton } from "@clerk/nextjs";
+import Link from "next/link";
 
 export default function Header() {
   return (
@@ -14,9 +9,11 @@ export default function Header() {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <div className="flex items-center">
-            <h1 className="text-2xl font-bold text-slate-900">
-              Jewelry<span className="text-amber-500">AI</span>
-            </h1>
+            <Link href="/">
+              <h1 className="text-2xl font-bold text-slate-900 cursor-pointer">
+                Jewelry<span className="text-amber-500">AI</span>
+              </h1>
+            </Link>
           </div>
 
           {/* Navigation */}
@@ -43,21 +40,16 @@ export default function Header() {
 
           {/* Auth Buttons */}
           <div className="flex items-center space-x-4">
-            <SignedOut>
-              <SignInButton mode="modal">
-                <button className="text-slate-600 hover:text-slate-900 font-medium">
-                  Login
-                </button>
-              </SignInButton>
-              <SignUpButton mode="modal">
-                <button className="bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-lg font-medium transition-colors">
-                  Start Free
-                </button>
-              </SignUpButton>
-            </SignedOut>
-            <SignedIn>
-              <UserButton />
-            </SignedIn>
+            <SignInButton mode="modal">
+              <button className="text-slate-600 hover:text-slate-900 font-medium">
+                Login
+              </button>
+            </SignInButton>
+            <SignUpButton mode="modal">
+              <button className="bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+                Start Free
+              </button>
+            </SignUpButton>
           </div>
         </div>
       </div>
