@@ -40,12 +40,12 @@ export default function Header() {
 
           {/* Auth Buttons */}
           <div className="flex items-center space-x-4">
-            <SignInButton mode="modal">
+            <SignInButton mode="modal" redirectUrl="/dashboard">
               <button className="text-slate-600 hover:text-slate-900 font-medium">
                 Login
               </button>
             </SignInButton>
-            <SignUpButton mode="modal">
+            <SignUpButton mode="modal" redirectUrl="/dashboard">
               <button className="bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-lg font-medium transition-colors">
                 Start Free
               </button>
