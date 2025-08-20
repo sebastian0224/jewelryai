@@ -1,0 +1,56 @@
+// prisma/schema.prisma
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String @id // Clerk ID como primary key
+  email     String @unique
+  name      String?
+  avatarUrl String?
+  
+  // Plan info
+  plan         String @default("free")
+  monthlyUsage Int    @default(0)
+  
+  // Relations
+  images ProcessedImage[]
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@map("users")
+}
+
+model ProcessedImage {
+  id     String @id @default(cuid())
+  userId String
+  
+  // URLs
+  originalUrl  String
+  processedUrl String?
+  
+  // Processing
+  status   ProcessingStatus @default(PENDING)
+  fileName String
+  
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  createdAt DateTime @default(now())
+  
+  @@map("processed_images")
+}
+
+// Enums
+enum ProcessingStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+}
