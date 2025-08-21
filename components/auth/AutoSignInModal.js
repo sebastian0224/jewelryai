@@ -13,11 +13,11 @@ export default function AutoSignInModal() {
   const router = useRouter();
 
   // Manejar redirección automática si ya está autenticado
-  // useEffect(() => {
-  //   if (isLoaded && isSignedIn) {
-  //     router.push("/dashboard");
-  //   }
-  // }, [isSignedIn, isLoaded, router]);
+  useEffect(() => {
+    if (isLoaded && isSignedIn) {
+      router.push("/dashboard");
+    }
+  }, [isSignedIn, isLoaded, router]);
 
   // Manejar auto-signin modal desde URL params
   useEffect(() => {

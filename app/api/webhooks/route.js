@@ -1,4 +1,3 @@
-// app/api/webhooks/clerk/route.js
 import { verifyWebhook } from "@clerk/nextjs/webhooks";
 import prisma from "@/lib/prisma";
 
