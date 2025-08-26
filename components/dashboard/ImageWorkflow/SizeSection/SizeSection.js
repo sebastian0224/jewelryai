@@ -4,61 +4,45 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useWorkflow } from "../WorkflowContext";
 
-// Size format options
+// Size format options - Lista simplificada
 const sizeOptions = [
-  {
-    id: "facebook-post",
-    name: "Facebook Post",
-    dimensions: "1200 × 630",
-    ratio: "1.91:1",
-  },
   {
     id: "instagram-post",
     name: "Instagram Post",
     dimensions: "1080 × 1080",
+    width: 1080,
+    height: 1080,
     ratio: "1:1",
   },
   {
     id: "instagram-story",
     name: "Instagram Story",
     dimensions: "1080 × 1920",
+    width: 1080,
+    height: 1920,
     ratio: "9:16",
   },
   {
-    id: "twitter-post",
-    name: "Twitter Post",
-    dimensions: "1200 × 675",
-    ratio: "16:9",
-  },
-  {
-    id: "linkedin-post",
-    name: "LinkedIn Post",
-    dimensions: "1200 × 627",
+    id: "facebook-post",
+    name: "Facebook Post",
+    dimensions: "1200 × 630",
+    width: 1200,
+    height: 630,
     ratio: "1.91:1",
-  },
-  {
-    id: "pinterest-pin",
-    name: "Pinterest Pin",
-    dimensions: "1000 × 1500",
-    ratio: "2:3",
-  },
-  {
-    id: "custom-square",
-    name: "Custom Square",
-    dimensions: "2000 × 2000",
-    ratio: "1:1",
   },
   {
     id: "high-res",
     name: "High Resolution",
-    dimensions: "3000 × 2000",
-    ratio: "3:2",
+    dimensions: "2000 × 2000",
+    width: 2000,
+    height: 2000,
+    ratio: "1:1",
   },
 ];
 
 function SizeSelector({ selectedSize, onSizeSelect }) {
   return (
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+    <div className="grid grid-cols-2 gap-3">
       {sizeOptions.map((option) => (
         <Card
           key={option.id}
@@ -78,12 +62,6 @@ function SizeSelector({ selectedSize, onSizeSelect }) {
                     ? "w-8 h-8"
                     : option.ratio === "9:16"
                     ? "w-4 h-8"
-                    : option.ratio === "16:9"
-                    ? "w-8 h-4"
-                    : option.ratio === "2:3"
-                    ? "w-6 h-8"
-                    : option.ratio === "3:2"
-                    ? "w-8 h-6"
                     : "w-8 h-4" // default for 1.91:1
                 }`}
               />

@@ -1,7 +1,8 @@
 "use client";
 
 import { createContext, useContext, useState } from "react";
-import { changeBackgroundBria } from "@/lib/replicate";
+import { generateImagesAction } from "@/lib/actions/generate-images";
+import { useUser } from "@clerk/nextjs";
 
 // Crear el contexto
 const WorkflowContext = createContext(undefined);
@@ -37,6 +38,7 @@ const generateStylePrompt = (selectedStyle) => {
 
 // Proveedor del contexto
 export function WorkflowProvider({ children }) {
+  const { user } = useUser();
   // Estados principales del workflow
   const [currentStep, setCurrentStep] = useState(1);
   const [uploadedImage, setUploadedImage] = useState(null);
@@ -98,8 +100,12 @@ export function WorkflowProvider({ children }) {
     }
   };
 
-  // NUEVO: Función principal de generación de imágenes (simplificada)
   const generateImages = async () => {
+    if (!user?.id) {
+      setError("User not authenticated");
+      return;
+    }
+
     if (!uploadedImage || !selectedStyle || !selectedSize) {
       setError("Missing required data for generation");
       return;
@@ -108,28 +114,21 @@ export function WorkflowProvider({ children }) {
     try {
       setGenerationState("generating");
       setError(null);
-
-      const stylePrompt = generateStylePrompt(selectedStyle);
-
-      const result = await changeBackgroundBria(uploadedImage, stylePrompt);
+      const result = await generateImagesAction(
+        uploadedImage,
+        selectedStyle,
+        selectedSize,
+        user.id
+      );
 
       if (!result.success) {
-        throw new Error(result.error || "Generation failed");
+        throw new Error(result.error);
       }
-      console.log(result);
 
-      // Procesar los resultados (asumo que result.imageUrls es un array)
-      const processedImages = result.imageUrls.map((imageUrl, index) => ({
-        id: Date.now() + index, // ID único
-        imageUrl: imageUrl,
-        background: selectedStyle.name,
-        size: selectedSize.name,
-        prompt: stylePrompt,
-        index: index + 1,
-      }));
-
-      setGeneratedImages(processedImages);
+      setGeneratedImages(result.images);
       setGenerationState("results");
+
+      console.log(`Successfully processed ${result.processedCount} images`);
     } catch (error) {
       console.error("Generation error:", error);
       setError(error.message || "Failed to generate images");
