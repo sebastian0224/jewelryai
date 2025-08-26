@@ -73,7 +73,7 @@ function SidebarContent({ onLinkClick }) {
       {/* User Section */}
       <div className="p-6 border-t border-sidebar-border">
         <div className="flex items-center space-x-3">
-          <UserButton afterSignOutUrl="/" />
+          <UserButton />
           <div className="flex-1 min-w-0">
             <p className="text-sm font-medium text-sidebar-foreground truncate">
               {user?.firstName || user?.fullName || "Usuario"}

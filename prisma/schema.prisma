@@ -30,27 +30,10 @@ model User {
 model ProcessedImage {
   id     String @id @default(cuid())
   userId String
-  
-  // URLs
-  originalUrl  String
-  processedUrl String?
-  
-  // Processing
-  status   ProcessingStatus @default(PENDING)
-  fileName String
-  
-  // Relations
+  cloudinaryUrl String 
+  styleUsed  String?
+  sizeUsed   String?
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
   createdAt DateTime @default(now())
-  
   @@map("processed_images")
-}
-
-// Enums
-enum ProcessingStatus {
-  PENDING
-  PROCESSING
-  COMPLETED
-  FAILED
 }
