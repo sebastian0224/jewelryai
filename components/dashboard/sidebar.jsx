@@ -10,14 +10,14 @@ import {
   SheetTrigger,
   SheetTitle,
 } from "@/components/ui/sheet";
-import { Menu, Home, Sparkles, FolderOpen } from "lucide-react";
+import { Menu, Wand2, Image, TrendingUp, Sparkles } from "lucide-react";
 import { UserButton, useUser } from "@clerk/nextjs";
 import { cn } from "@/lib/utils";
 
 const navigation = [
-  { name: "Inicio", href: "/dashboard", icon: Home },
-  { name: "Generado", href: "/dashboard/generated", icon: Sparkles },
-  { name: "Colecciones", href: "/dashboard/collections", icon: FolderOpen },
+  { name: "Generate", href: "/dashboard", icon: Wand2 },
+  { name: "Gallery", href: "/dashboard/gallery", icon: Image },
+  { name: "Usage", href: "/dashboard/usage", icon: TrendingUp },
 ];
 
 function SidebarContent({ onLinkClick }) {

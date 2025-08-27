@@ -43,7 +43,7 @@ export function UploadSection() {
             {/* Next Button */}
             <div className="flex justify-end">
               <Button onClick={handleNext} className="px-8">
-                Continue to Style →---------------------------arreglarlo
+                Continue to Style
               </Button>
             </div>
           </div>

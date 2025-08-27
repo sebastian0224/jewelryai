@@ -31,6 +31,13 @@ export function GenerateSection() {
     resetWorkflow();
   };
 
+  // Obtener las imágenes seleccionadas con toda su información
+  const getSelectedImagesData = () => {
+    return selectedImages
+      .map((id) => generatedImages.find((img) => img.id === id))
+      .filter(Boolean);
+  };
+
   return (
     <Card>
       <CardHeader>
@@ -131,7 +138,7 @@ export function GenerateSection() {
                 size="lg"
                 className="px-12 py-4 text-lg"
               >
-                🚀 Generate AI Backgrounds
+                Generate AI Backgrounds
               </Button>
             </div>
           </>
@@ -157,19 +164,17 @@ export function GenerateSection() {
 
         {/* Results State - Show generated images grid */}
         {generationState === "results" && generatedImages.length > 0 && (
-          <>
-            {/* Success message */}
-            <div className="text-center py-4">
-              <p className="text-lg font-medium text-green-600">
-                ✅ Successfully generated {generatedImages.length} images!
-              </p>
-              <p className="text-sm text-muted-foreground">
-                Select the ones you want to keep
-              </p>
-            </div>
+          <div className="space-y-8">
+            {/* Batch Actions Header */}
+            <BatchActions
+              selectedCount={selectedImages.length}
+              totalCount={generatedImages.length}
+              onSelectAll={selectAllImages}
+              selectedImages={getSelectedImagesData()}
+            />
 
-            {/* Results Grid - AHORA usa generatedImages del contexto */}
-            <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2 gap-4">
+            {/* Results Grid */}
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-2">
               {generatedImages.map((result) => (
                 <GeneratedImageCard
                   key={result.id}
@@ -181,17 +186,7 @@ export function GenerateSection() {
                 />
               ))}
             </div>
-
-            {/* Batch Actions - AHORA funciona correctamente */}
-            <BatchActions
-              selectedCount={selectedImages.length}
-              totalCount={generatedImages.length}
-              onSelectAll={selectAllImages} // Función corregida
-              selectedImages={selectedImages
-                .map((id) => generatedImages.find((img) => img.id === id))
-                .filter(Boolean)} // Filtrar undefined
-            />
-          </>
+          </div>
         )}
 
         {/* Results State pero sin imágenes (error edge case) */}
@@ -201,7 +196,7 @@ export function GenerateSection() {
               No images were generated. Please try again.
             </p>
             <Button onClick={handleStartNew} variant="outline" className="mt-4">
-              🔄 Try Again
+              Try Again
             </Button>
           </div>
         )}
@@ -210,7 +205,7 @@ export function GenerateSection() {
         <div className="flex justify-between pt-6">
           {(generationState === "results" || generationState === "error") && (
             <Button onClick={handleStartNew} variant="outline">
-              🔄 Start New Generation
+              Start New Generation
             </Button>
           )}
         </div>
