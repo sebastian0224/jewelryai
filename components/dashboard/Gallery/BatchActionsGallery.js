@@ -1,14 +1,15 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Download } from "lucide-react";
+import { Download, Trash2 } from "lucide-react";
 import { useState } from "react";
 
-export function BatchActions({
+export function BatchActionsGallery({
   selectedCount,
   totalCount,
-  onSelectAll,
   selectedImages,
+  onDeleteSelected,
+  isDeleting = false,
 }) {
   const [isDownloading, setIsDownloading] = useState(false);
 
@@ -18,10 +19,8 @@ export function BatchActions({
     setIsDownloading(true);
     try {
       if (selectedImages.length === 1) {
-        // Descarga individual
         await downloadSingleImage(selectedImages[0]);
       } else {
-        // Descarga múltiple como ZIP
         await downloadMultipleImagesAsZip(selectedImages);
       }
     } catch (error) {
@@ -33,13 +32,13 @@ export function BatchActions({
 
   const downloadSingleImage = async (image) => {
     try {
-      const response = await fetch(image.imageUrl);
+      const response = await fetch(image.cloudinaryUrl);
       const blob = await response.blob();
 
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
-      link.download = `jewelry-${image.background}-${image.size}.jpg`;
+      link.download = `jewelry-${image.styleUsed}-${image.sizeUsed}.jpg`;
       link.style.display = "none";
       document.body.appendChild(link);
       link.click();
@@ -53,28 +52,24 @@ export function BatchActions({
 
   const downloadMultipleImagesAsZip = async (images) => {
     try {
-      // Importar JSZip dinámicamente
       const JSZip = (await import("jszip")).default;
       const zip = new JSZip();
 
-      // Descargar todas las imágenes y agregarlas al ZIP
       const downloadPromises = images.map(async (image, index) => {
         try {
-          const response = await fetch(image.imageUrl);
+          const response = await fetch(image.cloudinaryUrl);
           const blob = await response.blob();
-          const fileName = `jewelry-${image.background}-${image.size}-${
+          const fileName = `jewelry-${image.styleUsed}-${image.sizeUsed}-${
             index + 1
           }.jpg`;
           zip.file(fileName, blob);
         } catch (error) {
           console.error(`Error downloading image ${index + 1}:`, error);
-          // No interrumpir el proceso por una imagen fallida
         }
       });
 
       await Promise.all(downloadPromises);
 
-      // Generar y descargar el ZIP
       const zipBlob = await zip.generateAsync({
         type: "blob",
         compression: "DEFLATE",
@@ -84,7 +79,7 @@ export function BatchActions({
       const url = window.URL.createObjectURL(zipBlob);
       const link = document.createElement("a");
       link.href = url;
-      link.download = `jewelry-images-${images.length}-images.zip`;
+      link.download = `jewelry-gallery-${images.length}-images.zip`;
       link.style.display = "none";
       document.body.appendChild(link);
       link.click();
@@ -100,47 +95,51 @@ export function BatchActions({
     if (isDownloading) {
       return selectedCount > 1 ? "Creating ZIP..." : "Downloading...";
     }
-
-    if (selectedCount > 1) {
-      return `Download ${selectedCount} images (ZIP)`;
-    }
-
-    return "Download (1 image)";
+    return selectedCount > 1
+      ? `Download ${selectedCount} images (ZIP)`
+      : "Download (1 image)";
   };
+
+  const isProcessing = isDeleting;
+
+  // Solo mostrar si hay imágenes seleccionadas
+  if (selectedCount === 0) return null;
 
   return (
     <div className="border-b border-border pb-6">
       <div className="flex justify-between items-end">
-        {totalCount > 0 && (
-          <div className="flex gap-2">
-            <Button
-              variant="outline"
-              onClick={onSelectAll}
-              disabled={isDownloading}
-            >
-              {selectedCount === totalCount ? "Deselect All" : "Select All"}
-            </Button>
+        <div className="flex gap-2 flex-wrap">
+          {/* Download Button */}
+          <Button
+            variant="outline"
+            onClick={handleBatchDownload}
+            disabled={isDownloading || isProcessing}
+          >
+            <Download className="w-4 h-4 mr-2" />
+            {getDownloadButtonText()}
+          </Button>
 
-            {selectedCount > 0 && (
-              <Button onClick={handleBatchDownload} disabled={isDownloading}>
-                <Download className="w-4 h-4 mr-2" />
-                {getDownloadButtonText()}
-              </Button>
-            )}
-          </div>
-        )}
+          {/* Delete Button */}
+          <Button
+            variant="destructive"
+            onClick={onDeleteSelected}
+            disabled={isDeleting || isDownloading}
+          >
+            <Trash2 className="w-4 h-4 mr-2" />
+            {isDeleting ? "Deleting..." : `Delete ${selectedCount} Selected`}
+          </Button>
+        </div>
       </div>
 
-      {selectedCount > 0 && (
-        <div className="mt-4 text-sm text-muted-foreground">
+      {/* Status Information */}
+      <div className="mt-4">
+        <div className="text-sm text-muted-foreground">
           {selectedCount} of {totalCount} images selected
-          {isDownloading && (
-            <span className="ml-2 text-primary">
-              • {selectedCount > 1 ? "Preparing download..." : "Downloading..."}
-            </span>
+          {isProcessing && (
+            <span className="ml-2 text-primary">• Deleting images...</span>
           )}
         </div>
-      )}
+      </div>
     </div>
   );
 }

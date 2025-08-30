@@ -6,7 +6,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useWorkflow } from "../WorkflowContext";
 
 import { GeneratedImageCard } from "./GeneratedImageCard";
-import { BatchActions } from "./BatchActions";
+import { BatchActionsGenerate } from "./BatchActionsGenerate";
 
 export function GenerateSection() {
   const {
@@ -21,6 +21,13 @@ export function GenerateSection() {
     error,
     generateImages,
     resetWorkflow,
+    userId, // Asumiendo que tienes userId en el contexto
+    originalImagePublicId, // AGREGADO: obtener del contexto
+    // Nuevos estados para manejar temporales
+    isTemporary,
+    setGeneratedImages,
+    setSelectedImages,
+    setGenerationState,
   } = useWorkflow();
 
   const handleGenerate = async () => {
@@ -38,13 +45,35 @@ export function GenerateSection() {
       .filter(Boolean);
   };
 
+  // Callback para manejar el resultado de save/discard
+  const handleImagesProcessed = (action, result) => {
+    if (action === "saved") {
+      // Redirigir a la galería o mostrar mensaje de éxito
+      console.log(
+        `Images saved successfully: ${result.savedCount} saved, ${result.discardedCount} discarded`
+      );
+
+      // Opcional: redirigir a la galería
+      // router.push('/dashboard/gallery');
+
+      // O resetear el workflow para nueva generación
+      resetWorkflow();
+    } else if (action === "discarded") {
+      console.log(`All images discarded: ${result.discardedCount} discarded`);
+
+      // Resetear el workflow después de descartar
+      resetWorkflow();
+    }
+  };
+
   return (
     <Card>
       <CardHeader>
         <CardTitle className="text-xl">
           {generationState === "ready" && "Ready to Generate"}
           {generationState === "generating" && "Generating AI Backgrounds"}
-          {generationState === "results" && "Generated Results"}
+          {generationState === "results" &&
+            (isTemporary ? "Review Your Results" : "Generated Results")}
           {generationState === "error" && "Generation Error"}
         </CardTitle>
         <p className="text-muted-foreground">
@@ -53,6 +82,10 @@ export function GenerateSection() {
           {generationState === "generating" &&
             "Processing your jewelry image with AI"}
           {generationState === "results" &&
+            isTemporary &&
+            "Choose which images to save permanently to your gallery"}
+          {generationState === "results" &&
+            !isTemporary &&
             `Generated ${generatedImages.length} jewelry images with AI backgrounds`}
           {generationState === "error" &&
             "Something went wrong during generation"}
@@ -166,11 +199,15 @@ export function GenerateSection() {
         {generationState === "results" && generatedImages.length > 0 && (
           <div className="space-y-8">
             {/* Batch Actions Header */}
-            <BatchActions
+            <BatchActionsGenerate
               selectedCount={selectedImages.length}
               totalCount={generatedImages.length}
               onSelectAll={selectAllImages}
               selectedImages={getSelectedImagesData()}
+              isTemporary={isTemporary}
+              userId={userId}
+              originalImagePublicId={originalImagePublicId}
+              onImagesProcessed={handleImagesProcessed}
             />
 
             {/* Results Grid */}
@@ -186,6 +223,17 @@ export function GenerateSection() {
                 />
               ))}
             </div>
+
+            {/* Success message for temporary images */}
+            {isTemporary && (
+              <Alert>
+                <AlertDescription>
+                  Images have been temporarily saved. Select the ones you want
+                  to keep permanently in your gallery, or download them now.
+                  Temporary images will be automatically deleted after 2 hours.
+                </AlertDescription>
+              </Alert>
+            )}
           </div>
         )}
 

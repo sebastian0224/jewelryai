@@ -28,12 +28,21 @@ model User {
 }
 
 model ProcessedImage {
-  id     String @id @default(cuid())
-  userId String
-  cloudinaryUrl String 
-  styleUsed  String?
-  sizeUsed   String?
+  id                 String    @id @default(cuid())
+  userId             String
+  cloudinaryUrl      String
+  cloudinaryPublicId String?   // NUEVO: Para poder eliminar de Cloudinary
+  styleUsed          String?
+  sizeUsed           String?
+  status             String    @default("saved") // NUEVO: "temporary" | "saved"
+  expiresAt          DateTime? // NUEVO: Para cleanup automático de temporales
+  savedAt            DateTime? // NUEVO: Timestamp cuando se guardó permanentemente
+  
+  // Relations
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt // AGREGADO: faltaba en tu schema
+  
   @@map("processed_images")
 }

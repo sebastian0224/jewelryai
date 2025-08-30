@@ -39,23 +39,47 @@ const generateStylePrompt = (selectedStyle) => {
 // Proveedor del contexto
 export function WorkflowProvider({ children }) {
   const { user } = useUser();
+
   // Estados principales del workflow
   const [currentStep, setCurrentStep] = useState(1);
   const [uploadedImage, setUploadedImage] = useState(null);
   const [selectedStyle, setSelectedStyle] = useState(null);
   const [selectedSize, setSelectedSize] = useState(null);
 
+  // NUEVO: Estado para tracking de imagen original
+  const [originalImagePublicId, setOriginalImagePublicId] = useState(null);
+
   // Estados de generación
   const [generationState, setGenerationState] = useState("ready"); // ready, generating, results, error
   const [generatedImages, setGeneratedImages] = useState([]);
   const [selectedImages, setSelectedImages] = useState([]);
 
-  // Estados de UI (sin progreso detallado)
-  // generationProgress eliminado - no necesario para una sola llamada
+  // Estado para manejar imágenes temporales
+  const [isTemporary, setIsTemporary] = useState(false);
 
   // Estados de UI
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+
+  // Función helper para extraer public_id de URL de Cloudinary
+  const extractPublicIdFromUrl = (cloudinaryUrl) => {
+    try {
+      // Ejemplo: https://res.cloudinary.com/your-cloud/image/upload/v1234567890/folder/public_id.jpg
+      const urlParts = cloudinaryUrl.split("/");
+      const uploadIndex = urlParts.indexOf("upload");
+      if (uploadIndex !== -1 && uploadIndex + 2 < urlParts.length) {
+        // Tomar desde después de la versión hasta el final (sin extensión)
+        let publicIdWithFolder = urlParts.slice(uploadIndex + 2).join("/");
+        // Remover extensión si existe
+        publicIdWithFolder = publicIdWithFolder.replace(/\.[^/.]+$/, "");
+        return publicIdWithFolder;
+      }
+      return null;
+    } catch (error) {
+      console.error("Error extracting public_id from URL:", error);
+      return null;
+    }
+  };
 
   // Funciones helper para manejar los estados
   const goToStep = (step) => {
@@ -73,13 +97,31 @@ export function WorkflowProvider({ children }) {
   const resetWorkflow = () => {
     setCurrentStep(1);
     setUploadedImage(null);
+    setOriginalImagePublicId(null); // NUEVO: resetear public_id
     setSelectedStyle(null);
     setSelectedSize(null);
     setGenerationState("ready");
     setGeneratedImages([]);
     setSelectedImages([]);
+    setIsTemporary(false);
     setIsLoading(false);
     setError(null);
+  };
+
+  // NUEVO: Función actualizada para setear imagen subida
+  const handleSetUploadedImage = (imageData) => {
+    setUploadedImage(imageData);
+
+    // Extraer y guardar el public_id si es una URL de Cloudinary
+    if (typeof imageData === "string" && imageData.includes("cloudinary.com")) {
+      const publicId = extractPublicIdFromUrl(imageData);
+      setOriginalImagePublicId(publicId);
+      console.log("Original image public_id extracted:", publicId);
+    } else if (imageData && imageData.public_id) {
+      // Si el imageData ya viene con public_id
+      setOriginalImagePublicId(imageData.public_id);
+      console.log("Original image public_id from data:", imageData.public_id);
+    }
   };
 
   const handleImageSelect = (imageId, isSelected) => {
@@ -118,7 +160,8 @@ export function WorkflowProvider({ children }) {
         uploadedImage,
         selectedStyle,
         selectedSize,
-        user.id
+        user.id,
+        originalImagePublicId
       );
 
       if (!result.success) {
@@ -126,13 +169,35 @@ export function WorkflowProvider({ children }) {
       }
 
       setGeneratedImages(result.images);
+      // Auto-seleccionar todas las imágenes generadas
+      setSelectedImages(result.images.map((img) => img.id));
+      setIsTemporary(result.isTemporary || false);
       setGenerationState("results");
 
-      console.log(`Successfully processed ${result.processedCount} images`);
+      console.log(
+        `Successfully processed ${result.processedCount} images${
+          result.isTemporary ? " (temporary)" : ""
+        } - All images auto-selected`
+      );
     } catch (error) {
       console.error("Generation error:", error);
       setError(error.message || "Failed to generate images");
       setGenerationState("error");
+    }
+  };
+
+  // Función para manejar el callback de save/discard
+  const handleImagesProcessed = (action, result) => {
+    if (action === "saved") {
+      console.log(
+        `Images saved successfully: ${result.savedCount} saved, ${result.discardedCount} discarded`
+      );
+      // Resetear workflow después de guardar
+      resetWorkflow();
+    } else if (action === "discarded") {
+      console.log(`All images discarded: ${result.discardedCount} discarded`);
+      // Resetear workflow después de descartar
+      resetWorkflow();
     }
   };
 
@@ -168,11 +233,16 @@ export function WorkflowProvider({ children }) {
     uploadedImage,
     selectedStyle,
     selectedSize,
+    originalImagePublicId, // NUEVO
 
     // Estados de generación
     generationState,
     generatedImages,
     selectedImages,
+    isTemporary,
+
+    // User info
+    userId: user?.id,
 
     // Estados de UI
     isLoading,
@@ -186,20 +256,26 @@ export function WorkflowProvider({ children }) {
 
     // Funciones de datos
     setUploadedImage,
+    handleSetUploadedImage, // ACTUALIZADO: usar nueva función
     setSelectedStyle,
     setSelectedSize,
     setGenerationState,
     setGeneratedImages,
+    setSelectedImages,
+    setIsTemporary,
     setIsLoading,
     setError,
 
-    // NUEVAS: Funciones de generación
+    // Funciones de generación
     generateImages,
     generateStylePrompt,
 
     // Funciones de selección de imágenes
     handleImageSelect,
     selectAllImages,
+
+    // Función para manejar save/discard
+    handleImagesProcessed,
 
     // Funciones de utilidad
     canGoToStep,

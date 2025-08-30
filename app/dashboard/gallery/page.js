@@ -3,7 +3,9 @@
 import { useEffect, useState } from "react";
 import { useUser } from "@clerk/nextjs";
 import { getUserImagesAction } from "@/lib/actions/get-user-images";
+import { deleteImagesAction } from "@/lib/actions/delete-images-action";
 import { ImageCard } from "@/components/dashboard/Gallery/ImageCard";
+import { BatchActionsGallery } from "@/components/dashboard/Gallery/BatchActionsGallery";
 import { Button } from "@/components/ui/button";
 import { RefreshCw } from "lucide-react";
 import {
@@ -13,15 +15,28 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 export default function GalleryPage() {
   const { user } = useUser();
   const [images, setImages] = useState([]);
   const [filteredImages, setFilteredImages] = useState([]);
+  const [selectedImages, setSelectedImages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [dateFilter, setDateFilter] = useState("all");
   const [styleFilter, setStyleFilter] = useState("all");
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const loadImages = async () => {
     if (!user?.id) {
@@ -36,6 +51,7 @@ export default function GalleryPage() {
       if (result.success) {
         setImages(result.images);
         setFilteredImages(result.images);
+        setSelectedImages([]); // Reset selection when reloading
         setError(null);
       } else {
         setError(result.error);
@@ -85,7 +101,76 @@ export default function GalleryPage() {
     }
 
     setFilteredImages(filtered);
+    // Reset selection when filters change
+    setSelectedImages([]);
   }, [images, dateFilter, styleFilter]);
+
+  // Manejar selección individual de imágenes
+  const handleImageSelect = (imageId, isSelected) => {
+    if (isSelected) {
+      setSelectedImages((prev) => [...prev, imageId]);
+    } else {
+      setSelectedImages((prev) => prev.filter((id) => id !== imageId));
+    }
+  };
+
+  // Seleccionar/deseleccionar todas las imágenes
+  const handleSelectAll = () => {
+    if (selectedImages.length === filteredImages.length) {
+      setSelectedImages([]);
+    } else {
+      setSelectedImages(filteredImages.map((img) => img.id));
+    }
+  };
+
+  // Obtener datos de imágenes seleccionadas
+  const getSelectedImagesData = () => {
+    return selectedImages
+      .map((id) => filteredImages.find((img) => img.id === id))
+      .filter(Boolean);
+  };
+
+  // Manejar eliminación individual desde modal
+  const handleImageDeleted = (imageId) => {
+    setImages((prev) => prev.filter((img) => img.id !== imageId));
+    setSelectedImages((prev) => prev.filter((id) => id !== imageId));
+  };
+
+  // Confirmar eliminación batch
+  const handleDeleteSelected = () => {
+    if (selectedImages.length > 0) {
+      setShowDeleteDialog(true);
+    }
+  };
+
+  // Ejecutar eliminación batch
+  const executeDeleteBatch = async () => {
+    if (!user?.id || selectedImages.length === 0) return;
+
+    setIsDeleting(true);
+    try {
+      const result = await deleteImagesAction(selectedImages, user.id);
+
+      if (result.success) {
+        console.log(`Successfully deleted ${result.deletedCount} images`);
+
+        // Actualizar estado local removiendo imágenes eliminadas
+        setImages((prev) =>
+          prev.filter((img) => !selectedImages.includes(img.id))
+        );
+        setSelectedImages([]);
+        setShowDeleteDialog(false);
+      } else {
+        console.error("Batch delete failed:", result.error);
+        alert("Failed to delete images. Please try again.");
+      }
+    } catch (error) {
+      console.error("Batch delete failed:", error);
+      alert("Failed to delete images. Please try again.");
+    } finally {
+      setIsDeleting(false);
+    }
+  };
 
   // Obtener estilos únicos para el filtro
   const uniqueStyles = [...new Set(images.map((img) => img.styleUsed))].filter(
@@ -153,6 +238,17 @@ export default function GalleryPage() {
         </div>
       </div>
 
+      {/* Batch Actions - Solo mostrar si hay imágenes seleccionadas */}
+      {selectedImages.length > 0 && (
+        <BatchActionsGallery
+          selectedCount={selectedImages.length}
+          totalCount={filteredImages.length}
+          selectedImages={getSelectedImagesData()}
+          onDeleteSelected={handleDeleteSelected}
+          isDeleting={isDeleting}
+        />
+      )}
+
       {loading ? (
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
           {[1, 2, 3, 4].map((item) => (
@@ -189,10 +285,47 @@ export default function GalleryPage() {
       ) : (
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
           {filteredImages.map((image) => (
-            <ImageCard key={image.id} image={image} />
+            <ImageCard
+              key={image.id}
+              image={image}
+              isSelected={selectedImages.includes(image.id)}
+              onSelect={(isSelected) => handleImageSelect(image.id, isSelected)}
+              onImageDeleted={handleImageDeleted}
+            />
           ))}
         </div>
       )}
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Confirm Deletion</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to permanently delete{" "}
+              {selectedImages.length} image
+              {selectedImages.length > 1 ? "s" : ""}? This action cannot be
+              undone and will remove the image
+              {selectedImages.length > 1 ? "s" : ""} from both your gallery and
+              cloud storage.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={executeDeleteBatch}
+              disabled={isDeleting}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {isDeleting
+                ? "Deleting..."
+                : `Delete ${selectedImages.length} Image${
+                    selectedImages.length > 1 ? "s" : ""
+                  }`}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

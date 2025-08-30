@@ -8,11 +8,11 @@ import { CloudinaryUploadButton } from "./CloudinaryUploadButton";
 import { ImagePreview } from "./ImagePreview";
 
 export function UploadSection() {
-  const { uploadedImage, setUploadedImage, nextStep, canGoToStep } =
+  const { uploadedImage, handleSetUploadedImage, nextStep, canGoToStep } =
     useWorkflow();
 
   const handleUploadSuccess = (imageUrl) => {
-    setUploadedImage(imageUrl);
+    handleSetUploadedImage(imageUrl);
   };
 
   const handleNext = () => {
