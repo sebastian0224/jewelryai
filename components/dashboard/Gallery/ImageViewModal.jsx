@@ -4,7 +4,7 @@ import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Download, Trash2 } from "lucide-react";
 import { useState } from "react";
-import { deleteImagesAction } from "@/lib/actions/delete-images-action";
+import { deleteImagesAction } from "@/lib/actions/gallery-actions";
 import { useUser } from "@clerk/nextjs";
 
 export function ImageViewModal({ isOpen, onClose, image, onImageDeleted }) {

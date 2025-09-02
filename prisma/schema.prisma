@@ -13,7 +13,7 @@ model User {
   email     String @unique
   name      String?
   avatarUrl String?
-  
+  lastUsageReset DateTime? 
   // Plan info
   plan         String @default("free")
   monthlyUsage Int    @default(0)

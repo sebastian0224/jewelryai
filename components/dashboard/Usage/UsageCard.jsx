@@ -4,10 +4,10 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { TrendingUp, AlertTriangle } from "lucide-react";
+import { TrendingUp, AlertTriangle, Crown } from "lucide-react";
 import { useUser } from "@clerk/nextjs";
 import { useEffect, useState } from "react";
-import { getUserUsageAction } from "@/lib/actions/get-user-usage-action";
+import { getUserUsage } from "@/lib/actions/usage-manager";
 
 export function UsageCard() {
   const { user } = useUser();
@@ -27,7 +27,7 @@ export function UsageCard() {
 
     setLoading(true);
     try {
-      const result = await getUserUsageAction(user.id);
+      const result = await getUserUsage(user.id);
 
       if (result.success) {
         setUsageData(result.data);
@@ -107,7 +107,10 @@ export function UsageCard() {
     isApproachingLimit,
     isAtLimit,
     resetDate,
+    remainingImages,
   } = usageData;
+
+  const isFree = plan === "free";
 
   return (
     <Card className="w-full">
@@ -115,16 +118,30 @@ export function UsageCard() {
         <CardTitle className="flex items-center gap-2">
           <TrendingUp className="h-5 w-5" />
           Usage & Limits
+          {plan === "pro" && (
+            <Crown className="h-4 w-4 text-yellow-500 ml-auto" />
+          )}
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         {/* Limit Alert */}
         {isAtLimit && (
-          <Alert variant="destructive">
+          <Alert variant={isFree ? "default" : "destructive"}>
             <AlertTriangle className="h-4 w-4" />
             <AlertDescription>
-              You've reached your monthly limit. Upgrade to generate more
-              images.
+              {isFree ? (
+                <>
+                  You've reached your monthly limit of{" "}
+                  <strong>{maxUsage} generations</strong>. Upgrade to Pro for
+                  more generations!
+                </>
+              ) : (
+                <>
+                  You've reached your Pro plan limit of{" "}
+                  <strong>{maxUsage} generations</strong>. Usage resets on{" "}
+                  <strong>{resetDate}</strong>.
+                </>
+              )}
             </AlertDescription>
           </Alert>
         )}
@@ -134,8 +151,9 @@ export function UsageCard() {
           <Alert>
             <AlertTriangle className="h-4 w-4" />
             <AlertDescription>
-              You're approaching your monthly limit. Consider upgrading your
-              plan.
+              You're approaching your monthly limit. {remainingImages}{" "}
+              generations remaining.
+              {isFree && " Consider upgrading to Pro!"}
             </AlertDescription>
           </Alert>
         )}
@@ -163,23 +181,29 @@ export function UsageCard() {
         {/* Usage description */}
         <div className="space-y-1">
           <p className="text-sm text-muted-foreground">
-            {maxUsage - currentUsage > 0
-              ? `${maxUsage - currentUsage} images remaining this month`
+            {remainingImages > 0
+              ? `${remainingImages} images remaining this month`
               : "Monthly limit reached"}
           </p>
           <p className="text-xs text-muted-foreground">
             Current plan: <span className="font-medium capitalize">{plan}</span>
+            {plan === "pro" && (
+              <Crown className="h-3 w-3 inline ml-1 text-yellow-500" />
+            )}
           </p>
         </div>
 
-        {/* Upgrade button - Visual only */}
-        <Button
-          className="w-full"
-          variant={isApproachingLimit ? "default" : "outline"}
-          disabled
-        >
-          Upgrade Plan
-        </Button>
+        {/* Upgrade button for free plan */}
+        {isFree && (
+          <Button
+            className="w-full"
+            variant={isApproachingLimit ? "default" : "outline"}
+            disabled // En modo demo
+          >
+            <Crown className="h-4 w-4 mr-2" />
+            Upgrade to Pro
+          </Button>
+        )}
 
         {/* Reset information */}
         <div className="pt-2 border-t">

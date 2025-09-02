@@ -2,8 +2,10 @@
 
 import { useEffect, useState } from "react";
 import { useUser } from "@clerk/nextjs";
-import { getUserImagesAction } from "@/lib/actions/get-user-images";
-import { deleteImagesAction } from "@/lib/actions/delete-images-action";
+import {
+  getUserImagesAction,
+  deleteImagesAction,
+} from "@/lib/actions/gallery-actions";
 import { ImageCard } from "@/components/dashboard/Gallery/ImageCard";
 import { BatchActionsGallery } from "@/components/dashboard/Gallery/BatchActionsGallery";
 import { Button } from "@/components/ui/button";
