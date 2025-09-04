@@ -52,12 +52,7 @@ export function BatchActionsGenerate({
       );
 
       if (result.success) {
-        console.log(
-          `Saved ${result.savedCount} images, discarded ${result.discardedCount} temporary images`
-        );
         onImagesProcessed && onImagesProcessed("saved", result);
-      } else {
-        console.error("Save failed:", result.error);
       }
     } catch (error) {
       console.error("Save failed:", error);
@@ -75,12 +70,8 @@ export function BatchActionsGenerate({
         userId,
         originalImagePublicId
       );
-
       if (result.success) {
-        console.log(`Discarded ${result.discardedCount} temporary images`);
         onImagesProcessed && onImagesProcessed("discarded", result);
-      } else {
-        console.error("Discard failed:", result.error);
       }
     } catch (error) {
       console.error("Discard failed:", error);
@@ -159,89 +150,90 @@ export function BatchActionsGenerate({
       return selectedCount > 1 ? "Creating ZIP..." : "Downloading...";
     }
     return selectedCount > 1
-      ? `Download ${selectedCount} images (ZIP)`
-      : "Download (1 image)";
+      ? `Download ${selectedCount} images`
+      : "Download image";
   };
 
   const isProcessing = isSaving || isDiscarding;
 
   return (
-    <div className="border-b border-border pb-6">
-      <div className="flex justify-between items-end">
+    <div className="bg-[#FAFAF7] border border-[#A8A8A8] rounded-xl p-6 mb-8">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
         {totalCount > 0 && (
-          <div className="flex gap-2 flex-wrap">
-            {/* Select All - Solo para Generate Section */}
+          <div className="flex flex-wrap gap-3">
             <Button
               variant="outline"
               onClick={onSelectAll}
               disabled={isProcessing || isDownloading}
+              className="bg-white border-[#A8A8A8] text-[#1A1A1A] hover:bg-[#F0F0F0] hover:border-[#C9A227] transition-all duration-200"
             >
-              {selectedCount === totalCount ? "Deselect All" : "Select All"}
+              {selectedCount === totalCount ? "Deselect all" : "Select all"}
             </Button>
 
             {selectedCount > 0 && (
               <>
-                {/* Download Button */}
                 <Button
                   variant="outline"
                   onClick={handleBatchDownload}
                   disabled={isDownloading || isProcessing}
+                  className="bg-white border-[#A8A8A8] text-[#1A1A1A] hover:bg-[#F0F0F0] hover:border-[#C9A227] transition-all duration-200"
                 >
                   <Download className="w-4 h-4 mr-2" />
                   {getDownloadButtonText()}
                 </Button>
 
-                {/* Save Button - Solo para temporales */}
                 {isTemporary && (
                   <Button
                     onClick={handleSaveSelected}
                     disabled={isSaving || isProcessing}
+                    className="bg-[#C9A227] text-white hover:bg-[#B8921F] border-0 transition-all duration-200"
                   >
                     <Save className="w-4 h-4 mr-2" />
-                    {isSaving ? "Saving..." : `Save ${selectedCount} Selected`}
+                    {isSaving ? "Saving..." : `Save ${selectedCount} selected`}
                   </Button>
                 )}
               </>
             )}
 
-            {/* Discard All Button - Solo para temporales */}
             {isTemporary && (
               <Button
                 variant="destructive"
                 onClick={handleDiscardAll}
                 disabled={isDiscarding || isProcessing}
+                className="bg-[#8C1C13] text-white hover:bg-[#7A1810] border-0 transition-all duration-200"
               >
                 <Trash2 className="w-4 h-4 mr-2" />
-                {isDiscarding ? "Discarding..." : "Discard All"}
+                {isDiscarding ? "Discarding..." : "Discard all"}
               </Button>
             )}
           </div>
         )}
       </div>
 
-      {/* Status Information */}
-      <div className="mt-4 space-y-1">
-        {selectedCount > 0 && (
-          <div className="text-sm text-muted-foreground">
-            {selectedCount} of {totalCount} images selected
-            {isProcessing && (
-              <span className="ml-2 text-primary">
-                •{" "}
-                {isSaving
-                  ? "Saving selected images..."
-                  : "Discarding images..."}
-              </span>
-            )}
-          </div>
-        )}
+      {(selectedCount > 0 || isTemporary) && (
+        <div className="mt-4 space-y-2">
+          {selectedCount > 0 && (
+            <div className="text-sm text-[#4D4D4D] font-medium">
+              {selectedCount} of {totalCount} images selected
+              {isProcessing && (
+                <span className="ml-2 text-[#155E63]">
+                  •{" "}
+                  {isSaving
+                    ? "Saving selected images..."
+                    : "Discarding images..."}
+                </span>
+              )}
+            </div>
+          )}
 
-        {isTemporary && !isProcessing && (
-          <div className="text-xs text-orange-600 dark:text-orange-400">
-            These are temporary images. Save the ones you want to keep or they
-            will be automatically deleted.
-          </div>
-        )}
-      </div>
+          {isTemporary && !isProcessing && (
+            <div className="text-xs text-[#C9A227] bg-[#C9A227]/10 px-3 py-2 rounded-lg border border-[#C9A227]/20">
+              These are temporary images. Save the ones you want to keep or they
+              will be automatically deleted.
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }

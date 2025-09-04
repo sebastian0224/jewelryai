@@ -4,86 +4,80 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* Updated color tokens for luxury jewelry theme with dark charcoal background and gold accents */
-  --background: oklch(0.15 0.02 240); /* Dark Charcoal */
-  --foreground: oklch(0.98 0 0); /* White */
-  --card: oklch(0.22 0.02 240); /* Darker Gray for Cards */
-  --card-foreground: oklch(0.98 0 0); /* White for Card Text */
-  --popover: oklch(0.98 0 0); /* White for Popovers */
-  --popover-foreground: oklch(0.22 0.02 240); /* Dark Gray for Popover Text */
-  --primary: oklch(0.7 0.15 85); /* Gold for Primary Actions */
-  --primary-foreground: oklch(
-    0.15 0.02 240
-  ); /* Dark Charcoal for Text on Gold */
-  --secondary: oklch(0.95 0.01 240); /* Light Gray for Secondary Elements */
-  --secondary-foreground: oklch(
-    0.15 0.02 240
-  ); /* Dark Charcoal for Text on Light Gray */
-  --muted: oklch(0.45 0.02 240); /* Medium Gray for Muted Text */
-  --muted-foreground: oklch(0.98 0 0); /* White for Muted Text */
-  --accent: oklch(0.7 0.15 85); /* Gold for Accents */
-  --accent-foreground: oklch(
-    0.15 0.02 240
-  ); /* Dark Charcoal for Text on Accents */
-  --destructive: oklch(0.5 0.2 25); /* Red for Destructive Actions */
-  --destructive-foreground: oklch(0.98 0 0); /* White for Text on Red */
-  --border: oklch(0.22 0.02 240); /* Dark Gray for Borders */
-  --input: oklch(0.98 0 0); /* White for Input Fields */
-  --ring: oklch(0.7 0.15 85); /* Gold for Focus Ring */
-  --chart-1: oklch(0.7 0.15 85); /* Gold for Chart 1 */
-  --chart-2: oklch(0.98 0 0); /* White for Chart 2 */
-  --chart-3: oklch(0.45 0.02 240); /* Medium Gray for Chart 3 */
-  --chart-4: oklch(0.22 0.02 240); /* Dark Gray for Chart 4 */
-  --chart-5: oklch(0.15 0.02 240); /* Dark Charcoal for Chart 5 */
-  --radius: 1rem; /* Increased radius for more luxury feel */
-  --sidebar: oklch(0.15 0.02 240); /* Dark Charcoal for Sidebar */
-  --sidebar-foreground: oklch(0.98 0 0); /* White for Sidebar Text */
-  --sidebar-primary: oklch(0.7 0.15 85); /* Gold for Sidebar Primary Actions */
-  --sidebar-primary-foreground: oklch(
-    0.15 0.02 240
-  ); /* Dark Charcoal for Sidebar Primary Text */
-  --sidebar-accent: oklch(0.7 0.15 85); /* Gold for Sidebar Accents */
-  --sidebar-accent-foreground: oklch(
-    0.15 0.02 240
-  ); /* Dark Charcoal for Sidebar Accent Text */
-  --sidebar-border: oklch(0.22 0.02 240); /* Dark Gray for Sidebar Borders */
-  --sidebar-ring: oklch(0.7 0.15 85); /* Gold for Sidebar Focus Ring */
+  /* Nueva paleta elegante y minimalista */
+  --background: #fafaf7; /* Blanco marfil - fondo principal */
+  --foreground: #1a1a1a; /* Gris antracita - texto principal */
+  --card: #f0f0f0; /* Gris humo - secciones/tarjetas */
+  --card-foreground: #1a1a1a; /* Gris antracita para texto en tarjetas */
+  --popover: #fafaf7; /* Blanco marfil para popovers */
+  --popover-foreground: #1a1a1a; /* Gris antracita para texto popover */
+  --primary: #c9a227; /* Oro suave - botón primario/acentos */
+  --primary-foreground: #fafaf7; /* Blanco marfil para texto en oro */
+  --secondary: #155e63; /* Verde esmeralda - color secundario */
+  --secondary-foreground: #fafaf7; /* Blanco marfil para texto en verde */
+  --muted: #4d4d4d; /* Gris ceniza - texto secundario */
+  --muted-foreground: #4d4d4d; /* Gris ceniza para texto muted */
+  --accent: #c9a227; /* Oro suave para acentos */
+  --accent-foreground: #fafaf7; /* Blanco marfil para texto en acentos */
+  --destructive: #8c1c13; /* Rojo vino para errores */
+  --destructive-foreground: #fafaf7; /* Blanco marfil para texto en error */
+  --success: #8ba888; /* Verde oliva claro para éxito */
+  --success-foreground: #1a1a1a; /* Gris antracita para texto en éxito */
+  --border: #a8a8a8; /* Plata elegante para bordes */
+  --input: #fafaf7; /* Blanco marfil para campos de entrada */
+  --ring: #c9a227; /* Oro suave para anillo de enfoque */
+  --chart-1: #c9a227; /* Oro suave */
+  --chart-2: #155e63; /* Verde esmeralda */
+  --chart-3: #4d4d4d; /* Gris ceniza */
+  --chart-4: #a8a8a8; /* Plata elegante */
+  --chart-5: #8ba888; /* Verde oliva claro */
+  --radius: 0.75rem; /* Radio elegante */
+  --sidebar: #155e63; /* Verde esmeralda para sidebar */
+  --sidebar-foreground: #fafaf7; /* Blanco marfil para texto sidebar */
+  --sidebar-primary: #c9a227; /* Oro suave para acciones primarias sidebar */
+  --sidebar-primary-foreground: #fafaf7; /* Blanco marfil para texto primario sidebar */
+  --sidebar-accent: #c9a227; /* Oro suave para acentos sidebar */
+  --sidebar-accent-foreground: #fafaf7; /* Blanco marfil para texto acento sidebar */
+  --sidebar-border: #a8a8a8; /* Plata elegante para bordes sidebar */
+  --sidebar-ring: #c9a227; /* Oro suave para anillo enfoque sidebar */
 }
 
 .dark {
-  /* Dark mode uses same luxury theme since it's already dark-based */
-  --background: oklch(0.15 0.02 240);
-  --foreground: oklch(0.98 0 0);
-  --card: oklch(0.22 0.02 240);
-  --card-foreground: oklch(0.98 0 0);
-  --popover: oklch(0.98 0 0);
-  --popover-foreground: oklch(0.22 0.02 240);
-  --primary: oklch(0.7 0.15 85);
-  --primary-foreground: oklch(0.15 0.02 240);
-  --secondary: oklch(0.95 0.01 240);
-  --secondary-foreground: oklch(0.15 0.02 240);
-  --muted: oklch(0.45 0.02 240);
-  --muted-foreground: oklch(0.98 0 0);
-  --accent: oklch(0.7 0.15 85);
-  --accent-foreground: oklch(0.15 0.02 240);
-  --destructive: oklch(0.5 0.2 25);
-  --destructive-foreground: oklch(0.98 0 0);
-  --border: oklch(0.22 0.02 240);
-  --input: oklch(0.98 0 0);
-  --ring: oklch(0.7 0.15 85);
-  --chart-1: oklch(0.7 0.15 85);
-  --chart-2: oklch(0.98 0 0);
-  --chart-3: oklch(0.45 0.02 240);
-  --chart-4: oklch(0.22 0.02 240);
-  --chart-5: oklch(0.15 0.02 240);
-  --sidebar: oklch(0.15 0.02 240);
-  --sidebar-foreground: oklch(0.98 0 0);
-  --sidebar-primary: oklch(0.7 0.15 85);
-  --sidebar-primary-foreground: oklch(0.15 0.02 240);
-  --sidebar-accent: oklch(0.7 0.15 85);
-  --sidebar-accent-foreground: oklch(0.15 0.02 240);
-  --sidebar-border: oklch(0.22 0.02 240);
-  --sidebar-ring: oklch(0.7 0.15 85);
+  /* Modo oscuro mantiene la elegancia */
+  --background: #1a1a1a;
+  --foreground: #fafaf7;
+  --card: #2a2a2a;
+  --card-foreground: #fafaf7;
+  --popover: #2a2a2a;
+  --popover-foreground: #fafaf7;
+  --primary: #c9a227;
+  --primary-foreground: #1a1a1a;
+  --secondary: #155e63;
+  --secondary-foreground: #fafaf7;
+  --muted: #4d4d4d;
+  --muted-foreground: #a8a8a8;
+  --accent: #c9a227;
+  --accent-foreground: #1a1a1a;
+  --destructive: #8c1c13;
+  --destructive-foreground: #fafaf7;
+  --success: #8ba888;
+  --success-foreground: #1a1a1a;
+  --border: #a8a8a8;
+  --input: #2a2a2a;
+  --ring: #c9a227;
+  --chart-1: #c9a227;
+  --chart-2: #155e63;
+  --chart-3: #4d4d4d;
+  --chart-4: #a8a8a8;
+  --chart-5: #8ba888;
+  --sidebar: #155e63;
+  --sidebar-foreground: #fafaf7;
+  --sidebar-primary: #c9a227;
+  --sidebar-primary-foreground: #fafaf7;
+  --sidebar-accent: #c9a227;
+  --sidebar-accent-foreground: #fafaf7;
+  --sidebar-border: #a8a8a8;
+  --sidebar-ring: #c9a227;
 }
 
 @theme inline {
@@ -103,6 +97,8 @@
   --color-accent-foreground: var(--accent-foreground);
   --color-destructive: var(--destructive);
   --color-destructive-foreground: var(--destructive-foreground);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
@@ -123,7 +119,7 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
-  /* Added luxury fonts */
+  /* Tipografías elegantes */
   --font-serif: "Playfair Display", serif;
   --font-sans: "Inter", sans-serif;
 }
@@ -133,6 +129,6 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground font-sans;
+    @apply bg-background text-foreground font-sans antialiased;
   }
 }

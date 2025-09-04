@@ -40,58 +40,58 @@ export function GeneratedImageCard({ image, isSelected, onSelect }) {
   return (
     <>
       <Card
-        className={`bg-card rounded-2xl overflow-hidden shadow-lg border group hover:shadow-xl transition-all ${
-          isSelected ? "ring-2 ring-primary border-primary" : "border-border"
+        className={`bg-white rounded-2xl overflow-hidden shadow-lg border-2 group hover:shadow-2xl transition-all duration-300 ${
+          isSelected
+            ? "border-[#C9A227] ring-2 ring-[#C9A227]/20"
+            : "border-[#A8A8A8] hover:border-[#C9A227]/50"
         }`}
       >
-        <div className="aspect-square bg-muted relative overflow-hidden">
+        <div className="aspect-square bg-[#F0F0F0] relative overflow-hidden">
           <img
-            src={image.imageUrl}
+            src={image.imageUrl || "/placeholder.svg"}
             alt={`Generated jewelry with ${image.background} background`}
-            className="w-full h-full object-cover transition-transform group-hover:scale-105"
+            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
             loading="lazy"
           />
 
-          {/* Selection Checkbox - FUERA del overlay para evitar conflictos */}
-          <div className="absolute top-2 left-2 z-20">
+          <div className="absolute top-3 left-3 z-20">
             <Checkbox
               checked={isSelected}
               onCheckedChange={handleCheckboxChange}
-              className="bg-background/90 backdrop-blur-sm border-2 border-white shadow-lg data-[state=checked]:bg-primary data-[state=checked]:border-primary hover:bg-background/95 transition-colors w-5 h-5"
+              className="bg-white/95 backdrop-blur-sm border-2 border-[#A8A8A8] shadow-lg data-[state=checked]:bg-[#C9A227] data-[state=checked]:border-[#C9A227] hover:bg-white transition-all duration-200 w-6 h-6"
             />
           </div>
 
-          {/* Overlay con botones - z-index menor que el checkbox */}
-          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/50 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100 z-10">
-            <div className="flex gap-2">
+          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/60 transition-all duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100 z-10">
+            <div className="flex gap-3">
               <Button
                 size="sm"
-                variant="secondary"
                 onClick={handleDownload}
                 disabled={isDownloading}
+                className="bg-white/95 text-[#1A1A1A] hover:bg-[#C9A227] hover:text-white border-0 backdrop-blur-sm transition-all duration-200"
               >
-                <Download className="w-4 h-4 mr-1" />
+                <Download className="w-4 h-4 mr-2" />
                 {isDownloading ? "..." : "Download"}
               </Button>
               <Button
                 size="sm"
-                variant="secondary"
                 onClick={() => setShowModal(true)}
+                className="bg-white/95 text-[#1A1A1A] hover:bg-[#155E63] hover:text-white border-0 backdrop-blur-sm transition-all duration-200"
               >
-                <ExternalLink className="w-4 h-4 mr-1" />
+                <ExternalLink className="w-4 h-4 mr-2" />
                 View
               </Button>
             </div>
           </div>
         </div>
 
-        <CardContent className="p-4">
-          <div className="space-y-2">
+        <CardContent className="p-6">
+          <div className="space-y-3">
             <div>
-              <h3 className="font-serif font-semibold text-card-foreground">
+              <h3 className="font-serif font-semibold text-lg text-[#1A1A1A]">
                 {image.background} Background
               </h3>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-sm text-[#4D4D4D] font-medium">
                 {image.size} • Generated now
               </p>
             </div>

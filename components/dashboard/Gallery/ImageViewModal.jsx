@@ -2,7 +2,7 @@
 
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Download, Trash2 } from "lucide-react";
+import { Download, Trash2, X } from "lucide-react";
 import { useState } from "react";
 import { deleteImagesAction } from "@/lib/actions/gallery-actions";
 import { useUser } from "@clerk/nextjs";
@@ -47,8 +47,8 @@ export function ImageViewModal({ isOpen, onClose, image, onImageDeleted }) {
 
       if (result.success) {
         console.log(`Successfully deleted image ${image.id}`);
-        onClose(); // Cerrar modal
-        onImageDeleted && onImageDeleted(image.id); // Notificar al padre
+        onClose();
+        onImageDeleted && onImageDeleted(image.id);
       } else {
         console.error("Delete failed:", result.error);
         alert("Failed to delete image. Please try again.");
@@ -62,7 +62,7 @@ export function ImageViewModal({ isOpen, onClose, image, onImageDeleted }) {
   };
 
   const formatDate = (date) => {
-    return new Date(date).toLocaleDateString("es-ES", {
+    return new Date(date).toLocaleDateString("en-US", {
       year: "numeric",
       month: "long",
       day: "numeric",
@@ -75,30 +75,40 @@ export function ImageViewModal({ isOpen, onClose, image, onImageDeleted }) {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl w-full h-[90vh] p-0">
-        {/* Hidden DialogTitle for accessibility */}
+      <DialogContent className="max-w-[95vw] sm:max-w-4xl xl:max-w-6xl w-full h-[90vh] sm:h-[85vh] p-0 overflow-hidden">
         <DialogTitle className="sr-only">
           Image View - {image.styleUsed || image.background} Background
         </DialogTitle>
 
-        <div className="flex h-full">
-          {/* Imagen */}
-          <div className="flex-1 bg-black flex items-center justify-center relative">
+        {/* Mobile Close Button */}
+        <Button
+          variant="outline"
+          size="icon"
+          className="absolute top-2 right-2 z-10 sm:hidden bg-black/50 border-white/20 text-white hover:bg-black/70"
+          onClick={onClose}
+        >
+          <X className="w-4 h-4" />
+        </Button>
+
+        <div className="flex flex-col h-full sm:flex-row">
+          {/* Main Image Container */}
+          <div className="flex-1 bg-black flex items-center justify-center relative min-h-0">
             <img
               src={image.cloudinaryUrl || image.imageUrl}
               alt={`Generated jewelry with ${
                 image.styleUsed || image.background
               } background`}
-              className="max-w-full max-h-full object-contain"
+              className="w-90 h-full object-scale-down"
             />
 
-            {/* Botones de acción superpuestos */}
-            <div className="absolute top-4 right-4 flex gap-2">
+            {/* Desktop Action Buttons - Top Right */}
+            <div className="hidden sm:flex absolute top-4 right-4 gap-2">
               <Button
                 size="sm"
                 variant="secondary"
                 onClick={handleDownload}
                 disabled={isDownloading || isDeleting}
+                className="bg-black/50 border-white/20 text-white hover:bg-black/70"
               >
                 <Download className="w-4 h-4 mr-1" />
                 {isDownloading ? "..." : "Download"}
@@ -109,20 +119,48 @@ export function ImageViewModal({ isOpen, onClose, image, onImageDeleted }) {
                 variant="destructive"
                 onClick={handleDelete}
                 disabled={isDeleting || isDownloading}
+                className="bg-red-500/80 hover:bg-red-600/80"
               >
                 <Trash2 className="w-4 h-4 mr-1" />
                 {isDeleting ? "..." : "Delete"}
               </Button>
             </div>
 
-            {/* Info de la imagen superpuesta */}
-            <div className="absolute bottom-4 left-4 bg-black/80 backdrop-blur-sm text-white p-3 rounded-lg">
-              <h3 className="font-serif font-semibold">
+            {/* Image Info Overlay - Bottom Left */}
+            <div className="absolute bottom-2 left-2 sm:bottom-4 sm:left-4 bg-black/80 backdrop-blur-sm text-white p-2 sm:p-3 rounded-lg max-w-[calc(100%-1rem)] sm:max-w-none">
+              <h3 className="font-serif font-semibold text-sm sm:text-base truncate">
                 {image.styleUsed || image.background} Background
               </h3>
-              <p className="text-sm opacity-80">
+              <p className="text-xs sm:text-sm opacity-80">
                 {image.sizeUsed || image.size} • {formatDate(image.createdAt)}
               </p>
+            </div>
+          </div>
+
+          {/* Mobile Action Bar - Bottom */}
+          <div className="sm:hidden border-t border-border bg-card p-3">
+            <div className="flex gap-2">
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={handleDownload}
+                disabled={isDownloading || isDeleting}
+                className="flex-1"
+              >
+                <Download className="w-4 h-4 mr-2" />
+                {isDownloading ? "Downloading..." : "Download"}
+              </Button>
+
+              <Button
+                size="sm"
+                variant="destructive"
+                onClick={handleDelete}
+                disabled={isDeleting || isDownloading}
+                className="flex-1"
+              >
+                <Trash2 className="w-4 h-4 mr-2" />
+                {isDeleting ? "Deleting..." : "Delete"}
+              </Button>
             </div>
           </div>
         </div>

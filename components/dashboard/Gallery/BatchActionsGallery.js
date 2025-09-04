@@ -96,27 +96,50 @@ export function BatchActionsGallery({
       return selectedCount > 1 ? "Creating ZIP..." : "Downloading...";
     }
     return selectedCount > 1
-      ? `Download ${selectedCount} images (ZIP)`
-      : "Download (1 image)";
+      ? `Download ${selectedCount} images`
+      : "Download image";
+  };
+
+  const getDownloadButtonTextMobile = () => {
+    if (isDownloading) {
+      return selectedCount > 1 ? "Creating..." : "Loading...";
+    }
+    return "Download";
+  };
+
+  const getDeleteButtonText = () => {
+    if (isDeleting) return "Deleting...";
+    return `Delete ${selectedCount} Selected`;
+  };
+
+  const getDeleteButtonTextMobile = () => {
+    if (isDeleting) return "Deleting...";
+    return "Delete";
   };
 
   const isProcessing = isDeleting;
 
-  // Solo mostrar si hay imágenes seleccionadas
   if (selectedCount === 0) return null;
 
   return (
-    <div className="border-b border-border pb-6">
-      <div className="flex justify-between items-end">
-        <div className="flex gap-2 flex-wrap">
+    <div className="border-b border-border pb-4 sm:pb-6">
+      <div className="flex flex-col space-y-3 sm:flex-row sm:justify-between sm:items-end sm:space-y-0">
+        {/* Action Buttons - Responsive Layout */}
+        <div className="flex flex-col space-y-2 sm:flex-row sm:gap-3 sm:space-y-0">
           {/* Download Button */}
           <Button
             variant="outline"
             onClick={handleBatchDownload}
             disabled={isDownloading || isProcessing}
+            className="w-full sm:w-auto justify-center sm:justify-start"
           >
             <Download className="w-4 h-4 mr-2" />
-            {getDownloadButtonText()}
+            {/* Text changes based on screen size */}
+            <span className="sm:hidden">{getDownloadButtonTextMobile()}</span>
+            <span className="hidden sm:inline">{getDownloadButtonText()}</span>
+            {selectedCount > 1 && (
+              <span className="hidden sm:inline ml-1">(ZIP)</span>
+            )}
           </Button>
 
           {/* Delete Button */}
@@ -124,20 +147,36 @@ export function BatchActionsGallery({
             variant="destructive"
             onClick={onDeleteSelected}
             disabled={isDeleting || isDownloading}
+            className="w-full sm:w-auto justify-center sm:justify-start"
           >
             <Trash2 className="w-4 h-4 mr-2" />
-            {isDeleting ? "Deleting..." : `Delete ${selectedCount} Selected`}
+            {/* Text changes based on screen size */}
+            <span className="sm:hidden">{getDeleteButtonTextMobile()}</span>
+            <span className="hidden sm:inline">{getDeleteButtonText()}</span>
           </Button>
+        </div>
+
+        {/* Status Information - Hidden on mobile when processing */}
+        <div className={`${isProcessing ? "hidden sm:block" : ""}`}>
+          <div className="text-xs sm:text-sm text-muted-foreground text-center sm:text-right">
+            {selectedCount} of {totalCount} images selected
+          </div>
         </div>
       </div>
 
-      {/* Status Information */}
-      <div className="mt-4">
-        <div className="text-sm text-muted-foreground">
-          {selectedCount} of {totalCount} images selected
-          {isProcessing && (
-            <span className="ml-2 text-primary">• Deleting images...</span>
-          )}
+      {/* Processing Status - Mobile Only */}
+      {isProcessing && (
+        <div className="mt-3 sm:hidden">
+          <div className="text-sm text-center text-primary">
+            • Processing images...
+          </div>
+        </div>
+      )}
+
+      {/* Additional Status Info for Mobile */}
+      <div className="mt-2 sm:hidden">
+        <div className="text-xs text-center text-muted-foreground">
+          {selectedCount} image{selectedCount > 1 ? "s" : ""} selected
         </div>
       </div>
     </div>

@@ -4,13 +4,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useWorkflow } from "../WorkflowContext";
-
 import { GeneratedImageCard } from "./GeneratedImageCard";
 import { BatchActionsGenerate } from "./BatchActionsGenerate";
 
 export function GenerateSection() {
   const {
-    // Estados del contexto
     selectedStyle,
     selectedSize,
     selectedImages,
@@ -21,9 +19,8 @@ export function GenerateSection() {
     error,
     generateImages,
     resetWorkflow,
-    userId, // Asumiendo que tienes userId en el contexto
-    originalImagePublicId, // AGREGADO: obtener del contexto
-    // Nuevos estados para manejar temporales
+    userId,
+    originalImagePublicId,
     isTemporary,
     setGeneratedImages,
     setSelectedImages,
@@ -38,49 +35,35 @@ export function GenerateSection() {
     resetWorkflow();
   };
 
-  // Obtener las imágenes seleccionadas con toda su información
   const getSelectedImagesData = () => {
     return selectedImages
       .map((id) => generatedImages.find((img) => img.id === id))
       .filter(Boolean);
   };
 
-  // Callback para manejar el resultado de save/discard
   const handleImagesProcessed = (action, result) => {
     if (action === "saved") {
-      // Redirigir a la galería o mostrar mensaje de éxito
-      console.log(
-        `Images saved successfully: ${result.savedCount} saved, ${result.discardedCount} discarded`
-      );
-
-      // Opcional: redirigir a la galería
-      // router.push('/dashboard/gallery');
-
-      // O resetear el workflow para nueva generación
       resetWorkflow();
     } else if (action === "discarded") {
-      console.log(`All images discarded: ${result.discardedCount} discarded`);
-
-      // Resetear el workflow después de descartar
       resetWorkflow();
     }
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="text-xl">
+    <Card className="bg-[#FAFAF7] border-[#A8A8A8] shadow-lg rounded-xl overflow-hidden p-0">
+      <CardHeader className="bg-[#155E63] text-white">
+        <CardTitle className="text-2xl font-serif text-[#FAFAF7]">
           {generationState === "ready" && "Ready to Generate"}
           {generationState === "generating" && "Generating AI Backgrounds"}
           {generationState === "results" &&
             (isTemporary ? "Review Your Results" : "Generated Results")}
           {generationState === "error" && "Generation Error"}
         </CardTitle>
-        <p className="text-muted-foreground">
+        <p className="text-[#FAFAF7]/80 font-sans">
           {generationState === "ready" &&
             "Review your selections and generate AI backgrounds"}
           {generationState === "generating" &&
-            "Processing your jewelry image with AI"}
+            "Processing your jewelry image with artificial intelligence"}
           {generationState === "results" &&
             isTemporary &&
             "Choose which images to save permanently to your gallery"}
@@ -92,41 +75,42 @@ export function GenerateSection() {
         </p>
       </CardHeader>
 
-      <CardContent className="space-y-8">
-        {/* Error State */}
+      <CardContent className="p-6 md:p-8 space-y-6 md:space-y-8">
         {generationState === "error" && (
-          <Alert variant="destructive">
-            <AlertDescription>
+          <Alert
+            variant="destructive"
+            className="bg-[#8C1C13]/10 border-[#8C1C13] text-[#8C1C13] rounded-lg"
+          >
+            <AlertDescription className="font-medium">
               {error ||
                 "An error occurred during image generation. Please try again."}
             </AlertDescription>
           </Alert>
         )}
 
-        {/* Ready State - Show selections and generate button */}
         {generationState === "ready" && (
           <>
-            {/* Selected Options Summary */}
             <div className="space-y-6">
-              <h3 className="text-lg font-medium">Your Selections</h3>
+              <h3 className="text-xl font-serif text-[#1A1A1A] text-center">
+                Your Selections
+              </h3>
 
-              <div className="grid md:grid-cols-2 gap-6">
-                {/* Selected Style */}
-                <div className="space-y-3">
-                  <h4 className="text-sm font-medium text-muted-foreground">
+              <div className="grid md:grid-cols-2 gap-6 md:gap-8 max-w-5xl mx-auto">
+                <div className="space-y-4">
+                  <h4 className="text-sm font-medium text-[#4D4D4D] uppercase tracking-wide">
                     Background Style
                   </h4>
-                  <Card className="ring-2 ring-primary/20">
-                    <CardContent className="p-4 space-y-3">
+                  <Card className="border-2 border-[#C9A227] bg-white shadow-md rounded-lg">
+                    <CardContent className="p-4 md:p-6 space-y-4">
                       <div
-                        className="w-full h-16 rounded-lg border"
+                        className="w-full h-20 rounded-lg border border-[#A8A8A8]"
                         style={{ background: selectedStyle.preview }}
                       />
-                      <div>
-                        <h5 className="font-medium text-sm">
+                      <div className="text-center">
+                        <h5 className="font-serif font-semibold text-[#1A1A1A]">
                           {selectedStyle.name}
                         </h5>
-                        <p className="text-xs text-muted-foreground">
+                        <p className="text-sm text-[#4D4D4D] mt-1">
                           {selectedStyle.description}
                         </p>
                       </div>
@@ -134,24 +118,23 @@ export function GenerateSection() {
                   </Card>
                 </div>
 
-                {/* Selected Size */}
-                <div className="space-y-3">
-                  <h4 className="text-sm font-medium text-muted-foreground">
+                <div className="space-y-4">
+                  <h4 className="text-sm font-medium text-[#4D4D4D] uppercase tracking-wide">
                     Output Format
                   </h4>
-                  <Card className="ring-2 ring-primary/20">
-                    <CardContent className="p-4 space-y-3">
+                  <Card className="border-2 border-[#C9A227] bg-white shadow-md rounded-lg">
+                    <CardContent className="p-4 md:p-6 space-y-4">
                       <div className="flex justify-center">
-                        <div className="w-12 h-12 bg-muted border rounded" />
+                        <div className="w-16 h-16 bg-[#F0F0F0] border border-[#A8A8A8] rounded-lg" />
                       </div>
                       <div className="text-center">
-                        <h5 className="font-medium text-sm">
+                        <h5 className="font-serif font-semibold text-[#1A1A1A]">
                           {selectedSize.name}
                         </h5>
-                        <p className="text-xs text-muted-foreground">
+                        <p className="text-sm text-[#4D4D4D]">
                           {selectedSize.dimensions}
                         </p>
-                        <p className="text-xs text-muted-foreground">
+                        <p className="text-xs text-[#4D4D4D]">
                           {selectedSize.ratio}
                         </p>
                       </div>
@@ -161,15 +144,14 @@ export function GenerateSection() {
               </div>
             </div>
 
-            {/* Generate Button */}
-            <div className="text-center space-y-4">
-              <div className="text-muted-foreground">
+            <div className="text-center space-y-6 py-6 md:py-8">
+              <div className="text-[#4D4D4D] font-medium">
                 Ready to process your image with AI
               </div>
               <Button
                 onClick={handleGenerate}
                 size="lg"
-                className="px-12 py-4 text-lg"
+                className="px-12 md:px-16 py-4 md:py-6 text-base md:text-lg font-serif bg-[#C9A227] hover:bg-[#B8921F] text-white border-0 rounded-xl shadow-lg transition-all duration-300 hover:shadow-xl"
               >
                 Generate AI Backgrounds
               </Button>
@@ -177,28 +159,26 @@ export function GenerateSection() {
           </>
         )}
 
-        {/* Generating State - Loading simple */}
         {generationState === "generating" && (
-          <div className="text-center space-y-6">
-            <div className="flex flex-col items-center space-y-4">
-              {/* Main spinner */}
+          <div className="text-center space-y-8 py-12">
+            <div className="flex flex-col items-center space-y-6">
               <div className="relative">
-                <div className="animate-spin rounded-full h-16 w-16 border-4 border-muted border-t-primary"></div>
+                <div className="animate-spin rounded-full h-20 w-20 border-4 border-[#F0F0F0] border-t-[#C9A227]"></div>
               </div>
-            </div>
-            <div className="space-y-2">
-              <p className="font-medium">Generating AI Backgrounds...</p>
-              <p className="text-sm text-muted-foreground">
-                Creating 4 variations with your selected style
-              </p>
+              <div className="space-y-3">
+                <p className="font-serif text-xl text-[#1A1A1A]">
+                  Generating AI Backgrounds...
+                </p>
+                <p className="text-[#4D4D4D]">
+                  Creating 4 variations with your selected style
+                </p>
+              </div>
             </div>
           </div>
         )}
 
-        {/* Results State - Show generated images grid */}
         {generationState === "results" && generatedImages.length > 0 && (
-          <div className="space-y-8">
-            {/* Batch Actions Header */}
+          <div className="space-y-6 md:space-y-8">
             <BatchActionsGenerate
               selectedCount={selectedImages.length}
               totalCount={generatedImages.length}
@@ -210,8 +190,7 @@ export function GenerateSection() {
               onImagesProcessed={handleImagesProcessed}
             />
 
-            {/* Results Grid */}
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-2">
+            <div className="grid gap-4 md:gap-6 lg:gap-8 grid-cols-1 md:grid-cols-2">
               {generatedImages.map((result) => (
                 <GeneratedImageCard
                   key={result.id}
@@ -223,40 +202,35 @@ export function GenerateSection() {
                 />
               ))}
             </div>
-
-            {/* Success message for temporary images */}
-            {isTemporary && (
-              <Alert>
-                <AlertDescription>
-                  Images have been temporarily saved. Select the ones you want
-                  to keep permanently in your gallery, or download them now.
-                  Temporary images will be automatically deleted after 2 hours.
-                </AlertDescription>
-              </Alert>
-            )}
           </div>
         )}
 
-        {/* Results State pero sin imágenes (error edge case) */}
         {generationState === "results" && generatedImages.length === 0 && (
-          <div className="text-center py-8">
-            <p className="text-muted-foreground">
+          <div className="text-center py-12">
+            <p className="text-[#4D4D4D] text-lg">
               No images were generated. Please try again.
             </p>
-            <Button onClick={handleStartNew} variant="outline" className="mt-4">
+            <Button
+              onClick={handleStartNew}
+              variant="outline"
+              className="mt-6 bg-white border-[#A8A8A8] text-[#1A1A1A] hover:bg-[#F0F0F0] hover:border-[#C9A227]"
+            >
               Try Again
             </Button>
           </div>
         )}
 
-        {/* Navigation Buttons */}
-        <div className="flex justify-between pt-6">
-          {(generationState === "results" || generationState === "error") && (
-            <Button onClick={handleStartNew} variant="outline">
+        {(generationState === "results" || generationState === "error") && (
+          <div className="flex justify-center pt-6 md:pt-8">
+            <Button
+              onClick={handleStartNew}
+              variant="outline"
+              className="bg-white border-[#A8A8A8] text-[#1A1A1A] hover:bg-[#F0F0F0] hover:border-[#C9A227] px-6 md:px-8 py-2 md:py-3 rounded-lg"
+            >
               Start New Generation
             </Button>
-          )}
-        </div>
+          </div>
+        )}
       </CardContent>
     </Card>
   );

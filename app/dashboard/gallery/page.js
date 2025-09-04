@@ -53,7 +53,7 @@ export default function GalleryPage() {
       if (result.success) {
         setImages(result.images);
         setFilteredImages(result.images);
-        setSelectedImages([]); // Reset selection when reloading
+        setSelectedImages([]);
         setError(null);
       } else {
         setError(result.error);
@@ -75,7 +75,6 @@ export default function GalleryPage() {
   useEffect(() => {
     let filtered = [...images];
 
-    // Filtro por fecha
     if (dateFilter !== "all") {
       const now = new Date();
       const filterDate = new Date();
@@ -97,17 +96,14 @@ export default function GalleryPage() {
       );
     }
 
-    // Filtro por estilo
     if (styleFilter !== "all") {
       filtered = filtered.filter((image) => image.styleUsed === styleFilter);
     }
 
     setFilteredImages(filtered);
-    // Reset selection when filters change
     setSelectedImages([]);
   }, [images, dateFilter, styleFilter]);
 
-  // Manejar selección individual de imágenes
   const handleImageSelect = (imageId, isSelected) => {
     if (isSelected) {
       setSelectedImages((prev) => [...prev, imageId]);
@@ -116,7 +112,6 @@ export default function GalleryPage() {
     }
   };
 
-  // Seleccionar/deseleccionar todas las imágenes
   const handleSelectAll = () => {
     if (selectedImages.length === filteredImages.length) {
       setSelectedImages([]);
@@ -125,27 +120,23 @@ export default function GalleryPage() {
     }
   };
 
-  // Obtener datos de imágenes seleccionadas
   const getSelectedImagesData = () => {
     return selectedImages
       .map((id) => filteredImages.find((img) => img.id === id))
       .filter(Boolean);
   };
 
-  // Manejar eliminación individual desde modal
   const handleImageDeleted = (imageId) => {
     setImages((prev) => prev.filter((img) => img.id !== imageId));
     setSelectedImages((prev) => prev.filter((id) => id !== imageId));
   };
 
-  // Confirmar eliminación batch
   const handleDeleteSelected = () => {
     if (selectedImages.length > 0) {
       setShowDeleteDialog(true);
     }
   };
 
-  // Ejecutar eliminación batch
   const executeDeleteBatch = async () => {
     if (!user?.id || selectedImages.length === 0) return;
 
@@ -155,8 +146,6 @@ export default function GalleryPage() {
 
       if (result.success) {
         console.log(`Successfully deleted ${result.deletedCount} images`);
-
-        // Actualizar estado local removiendo imágenes eliminadas
         setImages((prev) =>
           prev.filter((img) => !selectedImages.includes(img.id))
         );
@@ -174,7 +163,6 @@ export default function GalleryPage() {
     }
   };
 
-  // Obtener estilos únicos para el filtro
   const uniqueStyles = [...new Set(images.map((img) => img.styleUsed))].filter(
     Boolean
   );
@@ -188,40 +176,43 @@ export default function GalleryPage() {
   }
 
   return (
-    <div className="space-y-8">
-      <div className="border-b border-border pb-6">
-        <div className="flex justify-between items-end">
+    <div className="space-y-6 sm:space-y-8">
+      {/* Header Section - Responsive */}
+      <div className="border-b border-border pb-4 sm:pb-6">
+        <div className="flex flex-col space-y-4 sm:flex-row sm:justify-between sm:items-end sm:space-y-0">
+          {/* Title Section */}
           <div>
-            <h1 className="font-serif text-4xl font-bold text-foreground mb-2">
+            <h1 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground mb-1 sm:mb-2">
               Gallery
             </h1>
-            <p className="text-muted-foreground text-lg">
-              Todas tus imágenes generadas con IA ({filteredImages.length} de{" "}
+            <p className="text-muted-foreground text-sm sm:text-base lg:text-lg">
+              All your AI generated images ({filteredImages.length} of{" "}
               {images.length})
             </p>
           </div>
 
-          <div className="flex gap-3">
-            {/* Filtro por fecha */}
+          {/* Filters Section - Responsive */}
+          <div className="flex flex-col space-y-2 sm:flex-row sm:gap-3 sm:space-y-0">
+            {/* Date Filter */}
             <Select value={dateFilter} onValueChange={setDateFilter}>
-              <SelectTrigger className="w-32">
-                <SelectValue placeholder="Fecha" />
+              <SelectTrigger className="w-full sm:w-32">
+                <SelectValue placeholder="Date" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">Todas</SelectItem>
-                <SelectItem value="today">Hoy</SelectItem>
-                <SelectItem value="week">Esta semana</SelectItem>
-                <SelectItem value="month">Este mes</SelectItem>
+                <SelectItem value="all">All</SelectItem>
+                <SelectItem value="today">Today</SelectItem>
+                <SelectItem value="week">This week</SelectItem>
+                <SelectItem value="month">This month</SelectItem>
               </SelectContent>
             </Select>
 
-            {/* Filtro por estilo */}
+            {/* Style Filter */}
             <Select value={styleFilter} onValueChange={setStyleFilter}>
-              <SelectTrigger className="w-40">
-                <SelectValue placeholder="Estilo" />
+              <SelectTrigger className="w-full sm:w-40">
+                <SelectValue placeholder="Style" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">Todos los estilos</SelectItem>
+                <SelectItem value="all">All styles</SelectItem>
                 {uniqueStyles.map((style) => (
                   <SelectItem key={style} value={style}>
                     {style}
@@ -230,17 +221,24 @@ export default function GalleryPage() {
               </SelectContent>
             </Select>
 
-            <Button variant="outline" onClick={loadImages} disabled={loading}>
+            {/* Refresh Button */}
+            <Button
+              variant="outline"
+              onClick={loadImages}
+              disabled={loading}
+              className="w-full sm:w-auto"
+            >
               <RefreshCw
                 className={`w-4 h-4 mr-2 ${loading ? "animate-spin" : ""}`}
               />
-              Refresh
+              <span className="sm:hidden">Refresh Images</span>
+              <span className="hidden sm:inline">Refresh</span>
             </Button>
           </div>
         </div>
       </div>
 
-      {/* Batch Actions - Solo mostrar si hay imágenes seleccionadas */}
+      {/* Batch Actions - Responsive */}
       {selectedImages.length > 0 && (
         <BatchActionsGallery
           selectedCount={selectedImages.length}
@@ -251,15 +249,16 @@ export default function GalleryPage() {
         />
       )}
 
+      {/* Content Section */}
       {loading ? (
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-          {[1, 2, 3, 4].map((item) => (
+        <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {[1, 2, 3, 4, 5, 6, 7, 8].map((item) => (
             <div
               key={item}
               className="bg-card rounded-2xl overflow-hidden shadow-lg border border-border animate-pulse"
             >
               <div className="aspect-square bg-muted" />
-              <div className="p-4 space-y-2">
+              <div className="p-3 sm:p-4 space-y-2">
                 <div className="h-4 bg-muted rounded w-3/4" />
                 <div className="h-3 bg-muted rounded w-1/2" />
               </div>
@@ -268,15 +267,17 @@ export default function GalleryPage() {
         </div>
       ) : error ? (
         <div className="text-center py-12">
-          <p className="text-muted-foreground mb-4">{error}</p>
+          <p className="text-muted-foreground mb-4 text-sm sm:text-base">
+            {error}
+          </p>
           <Button onClick={loadImages}>Try Again</Button>
         </div>
       ) : filteredImages.length === 0 ? (
         <div className="text-center py-12">
-          <p className="text-muted-foreground mb-4">
+          <p className="text-muted-foreground mb-4 text-sm sm:text-base">
             {images.length === 0
-              ? "No tienes imágenes generadas aún"
-              : "No hay imágenes que coincidan con los filtros seleccionados"}
+              ? "No generated images yet"
+              : "No images match the selected filters"}
           </p>
           {images.length === 0 && (
             <Button asChild>
@@ -285,7 +286,7 @@ export default function GalleryPage() {
           )}
         </div>
       ) : (
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {filteredImages.map((image) => (
             <ImageCard
               key={image.id}
@@ -300,10 +301,10 @@ export default function GalleryPage() {
 
       {/* Delete Confirmation Dialog */}
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-        <AlertDialogContent>
+        <AlertDialogContent className="mx-4 sm:mx-auto">
           <AlertDialogHeader>
             <AlertDialogTitle>Confirm Deletion</AlertDialogTitle>
-            <AlertDialogDescription>
+            <AlertDialogDescription className="text-sm">
               Are you sure you want to permanently delete{" "}
               {selectedImages.length} image
               {selectedImages.length > 1 ? "s" : ""}? This action cannot be
@@ -312,12 +313,17 @@ export default function GalleryPage() {
               cloud storage.
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+          <AlertDialogFooter className="flex-col sm:flex-row gap-2 sm:gap-0">
+            <AlertDialogCancel
+              disabled={isDeleting}
+              className="w-full sm:w-auto"
+            >
+              Cancel
+            </AlertDialogCancel>
             <AlertDialogAction
               onClick={executeDeleteBatch}
               disabled={isDeleting}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              className="w-full sm:w-auto bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
               {isDeleting
                 ? "Deleting..."
