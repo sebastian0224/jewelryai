@@ -4,14 +4,14 @@ import Link from "next/link";
 
 export default function Header() {
   return (
-    <header className="bg-white shadow-sm border-b border-gray-100">
+    <header className="bg-background shadow-sm border-b border-border">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <div className="flex items-center">
             <Link href="/">
-              <h1 className="text-2xl font-bold text-slate-900 cursor-pointer">
-                Jewelry<span className="text-amber-500">AI</span>
+              <h1 className="text-2xl font-bold text-foreground cursor-pointer">
+                Jewelry<span className="text-secondary">AI</span>
               </h1>
             </Link>
           </div>
@@ -20,7 +20,7 @@ export default function Header() {
           <nav className="hidden md:flex space-x-8">
             <a
               href="#features"
-              className="text-slate-600 hover:text-slate-900 font-medium"
+              className="text-muted-foreground hover:text-foreground font-medium transition-colors"
             >
               Features
             </a>
@@ -32,7 +32,7 @@ export default function Header() {
             </a>
             <a
               href="#demo"
-              className="text-slate-600 hover:text-slate-900 font-medium"
+              className="text-muted-foreground hover:text-foreground font-medium transition-colors"
             >
               Demo
             </a>
@@ -41,13 +41,12 @@ export default function Header() {
           {/* Auth Buttons */}
           <div className="flex items-center space-x-4">
             <SignInButton mode="modal">
-              <button className="text-slate-600 hover:text-slate-900 font-medium">
+              <button className="text-muted-foreground hover:text-foreground font-medium transition-colors">
                 Login
               </button>
             </SignInButton>
             <SignUpButton mode="modal">
-              {/* corregir esta vaina */}
-              <button className="bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+              <button className="bg-accent hover:bg-accent/90 text-accent-foreground px-4 py-2 rounded-lg font-medium transition-colors">
                 Start Free
               </button>
             </SignUpButton>

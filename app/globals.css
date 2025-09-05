@@ -4,7 +4,7 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* Nueva paleta elegante y minimalista */
+  /* Updated to use hex values from JewelryAI brand palette for better consistency */
   --background: #fafaf7; /* Blanco marfil - fondo principal */
   --foreground: #1a1a1a; /* Gris antracita - texto principal */
   --card: #f0f0f0; /* Gris humo - secciones/tarjetas */
@@ -43,7 +43,7 @@
 }
 
 .dark {
-  /* Modo oscuro mantiene la elegancia */
+  /* Updated dark mode to maintain JewelryAI elegance */
   --background: #1a1a1a;
   --foreground: #fafaf7;
   --card: #2a2a2a;
@@ -81,6 +81,10 @@
 }
 
 @theme inline {
+  /* Added JewelryAI typography fonts while keeping existing Geist fonts as fallback */
+  --font-serif: "Playfair Display", serif;
+  --font-sans: "Inter", "Geist Sans", sans-serif;
+  --font-mono: "Geist Mono", monospace;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -119,9 +123,6 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
-  /* Tipografías elegantes */
-  --font-serif: "Playfair Display", serif;
-  --font-sans: "Inter", sans-serif;
 }
 
 @layer base {
@@ -129,6 +130,7 @@
     @apply border-border outline-ring/50;
   }
   body {
+    /* Added antialiased and font-sans for better typography */
     @apply bg-background text-foreground font-sans antialiased;
   }
 }

@@ -1,89 +1,83 @@
-// components/Features.tsx
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+
 export default function Features() {
   const features = [
     {
-      icon: "✨",
       title: "AI-Powered Enhancement",
       description:
-        "Advanced AI automatically adjusts lighting, removes backgrounds, and enhances jewelry details for professional results.",
+        "Advanced AI algorithms automatically enhance lighting, remove backgrounds, and perfect every detail of your jewelry photos.",
+      icon: "✨",
     },
     {
+      title: "Professional Backgrounds",
+      description:
+        "Choose from dozens of studio-quality backgrounds or upload your own to match your brand aesthetic.",
+      icon: "🎨",
+    },
+    {
+      title: "Batch Processing",
+      description:
+        "Process multiple jewelry photos at once. Perfect for large catalogs and e-commerce stores.",
       icon: "⚡",
-      title: "Lightning Fast",
-      description:
-        "Process your jewelry photos in under 30 seconds. No more waiting hours for professional edits.",
     },
     {
+      title: "High Resolution Output",
+      description:
+        "Get crisp, high-resolution images perfect for print, web, and social media marketing.",
+      icon: "📸",
+    },
+    {
+      title: "Brand Consistency",
+      description:
+        "Maintain consistent styling across all your jewelry photos with customizable presets and templates.",
       icon: "🎯",
-      title: "Jewelry Specialized",
-      description:
-        "Our AI is specifically trained on jewelry imagery, understanding gemstones, metals, and luxury aesthetics.",
     },
     {
-      icon: "📱",
-      title: "Easy to Use",
+      title: "Instant Results",
       description:
-        "Simple drag-and-drop interface. No design skills required. Upload, process, and download your enhanced photos.",
+        "Transform your photos in seconds, not hours. No complex editing software required.",
+      icon: "⏱️",
     },
   ];
 
   return (
-    <section id="features" className="py-20 bg-white">
+    <section id="features" className="py-20 bg-muted/30">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
-        <div className="text-center mb-16">
-          <h2 className="text-4xl font-bold text-slate-900 mb-4">
-            Why Choose JewelryAI?
+        <div className="text-center space-y-4 mb-16">
+          <h2 className="text-3xl lg:text-4xl font-bold text-foreground">
+            Everything You Need for Perfect Jewelry Photos
           </h2>
-          <p className="text-xl text-slate-600 max-w-3xl mx-auto">
-            Transform your jewelry photography with cutting-edge AI technology
-            designed specifically for luxury products.
+          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+            Professional-grade AI tools designed specifically for jewelry
+            photography and e-commerce success.
           </p>
         </div>
 
-        {/* Features Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {features.map((feature, index) => (
-            <div
+            <Card
               key={index}
-              className="text-center p-6 rounded-xl hover:bg-slate-50 transition-colors"
+              className="bg-card border-border hover:shadow-lg transition-shadow"
             >
-              <div className="text-4xl mb-4">{feature.icon}</div>
-              <h3 className="text-xl font-semibold text-slate-900 mb-3">
-                {feature.title}
-              </h3>
-              <p className="text-slate-600 leading-relaxed">
-                {feature.description}
-              </p>
-            </div>
+              <CardHeader>
+                <div className="text-3xl mb-4">{feature.icon}</div>
+                <CardTitle className="text-xl text-card-foreground">
+                  {feature.title}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <CardDescription className="text-muted-foreground leading-relaxed">
+                  {feature.description}
+                </CardDescription>
+              </CardContent>
+            </Card>
           ))}
-        </div>
-
-        {/* Before/After Preview */}
-        <div className="mt-20 bg-slate-50 rounded-2xl p-8">
-          <h3 className="text-2xl font-bold text-slate-900 text-center mb-8">
-            See the Difference
-          </h3>
-          <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-            <div className="text-center">
-              <div className="bg-gray-200 h-48 rounded-lg mb-4 flex items-center justify-center">
-                <span className="text-gray-500 font-medium">
-                  Before: Raw Photo
-                </span>
-              </div>
-              <p className="text-slate-600">Original jewelry photo</p>
-            </div>
-            <div className="text-center">
-              <div className="bg-gradient-to-br from-amber-100 to-amber-200 h-48 rounded-lg mb-4 flex items-center justify-center">
-                <span className="text-amber-700 font-medium">
-                  After: AI Enhanced
-                </span>
-              </div>
-              <p className="text-slate-600">
-                Professional, studio-quality result
-              </p>
-            </div>
-          </div>
         </div>
       </div>
     </section>
