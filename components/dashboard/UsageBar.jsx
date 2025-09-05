@@ -1,45 +1,11 @@
 "use client";
 
-import { useUser } from "@clerk/nextjs";
-import { useEffect, useState } from "react";
-import { getUserUsage } from "@/lib/actions/usage-manager";
+import { useUsage } from "@/components/dashboard/UsageContext";
 
 export function UsageBar() {
-  const { user } = useUser();
-  const [usageData, setUsageData] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const { usageData, loading, error } = useUsage();
 
-  // Load usage data
-  useEffect(() => {
-    if (user?.id) {
-      loadUsageData();
-    }
-  }, [user?.id]);
-
-  const loadUsageData = async () => {
-    if (!user?.id) return;
-
-    setLoading(true);
-    setError(null);
-
-    try {
-      const result = await getUserUsage(user.id);
-
-      if (result.success) {
-        setUsageData(result.data);
-      } else {
-        setError(result.error);
-      }
-    } catch (err) {
-      setError("Failed to load usage");
-      console.error("Usage bar error:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Loading and error states
+  // Loading state
   if (loading) {
     return (
       <div className="flex items-center gap-2 text-sm text-secondary-foreground/70">
@@ -49,6 +15,7 @@ export function UsageBar() {
     );
   }
 
+  // Error state
   if (error || !usageData) {
     return (
       <div className="text-sm text-secondary-foreground/70">

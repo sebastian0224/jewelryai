@@ -4,6 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useState } from "react";
 import { ImageViewModal } from "./ImageViewModal";
+import Image from "next/image";
 
 export function ImageCard({ image, isSelected, onSelect, onImageDeleted }) {
   const [showModal, setShowModal] = useState(false);
@@ -38,11 +39,12 @@ export function ImageCard({ image, isSelected, onSelect, onImageDeleted }) {
           className="aspect-square bg-muted relative overflow-hidden"
           onClick={handleImageClick}
         >
-          <img
+          <Image
             src={image.cloudinaryUrl}
             alt={`Generated jewelry with ${image.styleUsed} background`}
-            className="w-full h-full object-cover transition-transform group-hover:scale-105"
-            loading="lazy"
+            fill
+            className="object-cover transition-transform group-hover:scale-105"
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           />
 
           {/* Selection Checkbox - high z-index to avoid click conflicts */}

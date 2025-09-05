@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useState, useEffect } from "react";
 import { generateImagesAction } from "@/lib/actions/generate-images";
-import { getUserUsage } from "@/lib/actions/usage-manager";
+import { useUsage } from "@/components/dashboard/UsageContext";
 import { useUser } from "@clerk/nextjs";
 
 const WorkflowContext = createContext(undefined);
@@ -15,43 +15,39 @@ export function useWorkflow() {
   return context;
 }
 
-// Proveedor del contexto
 export function WorkflowProvider({ children }) {
   const { user } = useUser();
+  const { usageStatus, usageData, usageError, refreshUsage, remainingImages } =
+    useUsage();
 
-  // Estados principales del workflow
+  // Main workflow states
   const [currentStep, setCurrentStep] = useState(1);
   const [uploadedImage, setUploadedImage] = useState(null);
   const [selectedStyle, setSelectedStyle] = useState(null);
   const [selectedSize, setSelectedSize] = useState(null);
   const [originalImagePublicId, setOriginalImagePublicId] = useState(null);
 
-  // Estados de generación
+  // Generation states
   const [generationState, setGenerationState] = useState("ready");
   const [generatedImages, setGeneratedImages] = useState([]);
   const [selectedImages, setSelectedImages] = useState([]);
   const [isTemporary, setIsTemporary] = useState(false);
 
-  // Estados de UI
+  // UI states
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // Estados centralizados de usage
-  const [usageStatus, setUsageStatus] = useState("loading");
-  const [usageInfo, setUsageInfo] = useState(null);
-  const [usageError, setUsageError] = useState(null);
-
-  // Estado para controlar si ya se cargó desde localStorage
+  // Control state for localStorage initialization
   const [isInitialized, setIsInitialized] = useState(false);
 
-  // PERSISTENCE: Constantes
+  // PERSISTENCE: Constants
   const STORAGE_KEY = "jewelry-workflow";
   const STORAGE_VERSION = "1.0";
-  const EXPIRY_HOURS = 24; // Expira después de 24 horas
+  const EXPIRY_HOURS = 24;
 
-  // PERSISTENCE: Función para guardar estado en localStorage
+  // PERSISTENCE: Save workflow state to localStorage
   const saveWorkflowState = () => {
-    if (!isInitialized) return; // No guardar hasta que se haya inicializado
+    if (!isInitialized) return;
 
     const stateToSave = {
       version: STORAGE_VERSION,
@@ -62,7 +58,6 @@ export function WorkflowProvider({ children }) {
       selectedStyle,
       selectedSize,
       originalImagePublicId,
-      // Agregar estados de generación
       generationState,
       generatedImages,
       selectedImages,
@@ -77,7 +72,7 @@ export function WorkflowProvider({ children }) {
     }
   };
 
-  // PERSISTENCE: Función para cargar estado desde localStorage
+  // PERSISTENCE: Load workflow state from localStorage
   const loadWorkflowState = () => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
@@ -85,14 +80,12 @@ export function WorkflowProvider({ children }) {
 
       const parsedState = JSON.parse(saved);
 
-      // Verificar versión
       if (parsedState.version !== STORAGE_VERSION) {
         console.log("🔄 Workflow version mismatch, clearing localStorage");
         clearWorkflowState();
         return null;
       }
 
-      // Verificar expiración (24 horas)
       const now = Date.now();
       const age = now - parsedState.timestamp;
       const maxAge = EXPIRY_HOURS * 60 * 60 * 1000;
@@ -103,7 +96,6 @@ export function WorkflowProvider({ children }) {
         return null;
       }
 
-      // Verificar que sea del mismo usuario
       if (user?.id && parsedState.userId && parsedState.userId !== user.id) {
         console.log("👤 Different user, clearing localStorage");
         clearWorkflowState();
@@ -119,7 +111,7 @@ export function WorkflowProvider({ children }) {
     }
   };
 
-  // PERSISTENCE: Función para limpiar localStorage
+  // PERSISTENCE: Clear localStorage
   const clearWorkflowState = () => {
     try {
       localStorage.removeItem(STORAGE_KEY);
@@ -129,20 +121,18 @@ export function WorkflowProvider({ children }) {
     }
   };
 
-  // PERSISTENCE: Cargar estado al inicializar (solo una vez)
+  // PERSISTENCE: Load state on initialization
   useEffect(() => {
     if (user?.id && !isInitialized) {
       const savedState = loadWorkflowState();
 
       if (savedState) {
-        // Restaurar estado guardado
         setCurrentStep(savedState.currentStep || 1);
         setUploadedImage(savedState.uploadedImage);
         setSelectedStyle(savedState.selectedStyle);
         setSelectedSize(savedState.selectedSize);
         setOriginalImagePublicId(savedState.originalImagePublicId);
 
-        // Restaurar estados de generación
         if (savedState.generationState) {
           setGenerationState(savedState.generationState);
         }
@@ -165,7 +155,7 @@ export function WorkflowProvider({ children }) {
     }
   }, [user?.id, isInitialized]);
 
-  // PERSISTENCE: Auto-guardar cuando cambia el estado relevante
+  // PERSISTENCE: Auto-save when relevant state changes
   useEffect(() => {
     if (isInitialized && user?.id) {
       saveWorkflowState();
@@ -184,7 +174,7 @@ export function WorkflowProvider({ children }) {
     user?.id,
   ]);
 
-  // Función helper para extraer public_id de URL de Cloudinary
+  // Helper function to extract public_id from Cloudinary URL
   const extractPublicIdFromUrl = (cloudinaryUrl) => {
     try {
       const urlParts = cloudinaryUrl.split("/");
@@ -201,49 +191,7 @@ export function WorkflowProvider({ children }) {
     }
   };
 
-  // Cargar usage info al inicializar o cambiar usuario
-  useEffect(() => {
-    if (user?.id) {
-      loadUsageInfo();
-    } else {
-      setUsageStatus("loading");
-      setUsageInfo(null);
-      setUsageError(null);
-    }
-  }, [user?.id]);
-
-  // Función para cargar información de usage
-  const loadUsageInfo = async () => {
-    if (!user?.id) return;
-
-    setUsageStatus("loading");
-    setUsageError(null);
-
-    try {
-      const result = await getUserUsage(user.id);
-
-      if (result.success) {
-        setUsageInfo(result.data);
-        setUsageStatus(result.data.isAtLimit ? "limit_reached" : "available");
-      } else {
-        setUsageError(result.error);
-        setUsageStatus("available");
-      }
-    } catch (error) {
-      console.error("Error loading usage info:", error);
-      setUsageError("Failed to load usage information");
-      setUsageStatus("available");
-    }
-  };
-
-  // Función para refrescar usage después de generar
-  const refreshUsageInfo = async () => {
-    if (user?.id) {
-      await loadUsageInfo();
-    }
-  };
-
-  // Función actualizada para setear imagen subida
+  // Updated function to set uploaded image
   const handleSetUploadedImage = (imageData) => {
     setUploadedImage(imageData);
 
@@ -293,7 +241,8 @@ export function WorkflowProvider({ children }) {
         selectedStyle,
         selectedSize,
         user.id,
-        originalImagePublicId
+        originalImagePublicId,
+        remainingImages
       );
 
       if (!result.success) {
@@ -305,7 +254,8 @@ export function WorkflowProvider({ children }) {
       setIsTemporary(result.isTemporary || false);
       setGenerationState("results");
 
-      await refreshUsageInfo();
+      // 🔄 REFRESH USAGE IN SHARED CONTEXT - This updates UsageBar automatically
+      await refreshUsage();
 
       console.log(
         `Successfully processed ${result.processedCount} images${
@@ -319,27 +269,23 @@ export function WorkflowProvider({ children }) {
     }
   };
 
-  // PERSISTENCE: Función para manejar el callback de save/discard (limpia localStorage)
+  // PERSISTENCE: Handle save/discard callback (clears localStorage)
   const handleImagesProcessed = async (action, result) => {
     if (action === "saved") {
       console.log(
         `Images saved successfully: ${result.savedCount} saved, ${result.discardedCount} discarded`
       );
-      await refreshUsageInfo();
-
-      // LIMPIAR localStorage después de completar exitosamente
+      await refreshUsage();
       clearWorkflowState();
       resetWorkflow();
     } else if (action === "discarded") {
       console.log(`All images discarded: ${result.discardedCount} discarded`);
-
-      // LIMPIAR localStorage después de descartar
       clearWorkflowState();
       resetWorkflow();
     }
   };
 
-  // PERSISTENCE: Función de reset actualizada (también limpia localStorage)
+  // PERSISTENCE: Updated reset function (also clears localStorage)
   const resetWorkflow = () => {
     setCurrentStep(1);
     setUploadedImage(null);
@@ -353,15 +299,14 @@ export function WorkflowProvider({ children }) {
     setIsLoading(false);
     setError(null);
 
-    // LIMPIAR localStorage cuando se resetea manualmente
     clearWorkflowState();
 
     if (user?.id) {
-      loadUsageInfo();
+      refreshUsage();
     }
   };
 
-  // Funciones helper
+  // Helper functions
   const goToStep = (step) => {
     setCurrentStep(step);
   };
@@ -402,16 +347,16 @@ export function WorkflowProvider({ children }) {
     return ((currentStep - 1) / 3) * 100;
   };
 
-  // Valor del contexto que se pasará a los componentes
+  // Context value passed to components
   const contextValue = {
-    // Estados principales
+    // Main states
     currentStep,
     uploadedImage,
     selectedStyle,
     selectedSize,
     originalImagePublicId,
 
-    // Estados de generación
+    // Generation states
     generationState,
     generatedImages,
     selectedImages,
@@ -420,22 +365,22 @@ export function WorkflowProvider({ children }) {
     // User info
     userId: user?.id,
 
-    // Estados de UI
+    // UI states
     isLoading,
     error,
 
-    // Estados centralizados de usage
+    // Usage states (from shared context)
     usageStatus,
-    usageInfo,
+    usageInfo: usageData,
     usageError,
 
-    // Funciones de navegación
+    // Navigation functions
     goToStep,
     nextStep,
     prevStep,
     resetWorkflow,
 
-    // Funciones de datos
+    // Data functions
     setUploadedImage,
     handleSetUploadedImage,
     setSelectedStyle,
@@ -447,25 +392,25 @@ export function WorkflowProvider({ children }) {
     setIsLoading,
     setError,
 
-    // Funciones de usage
-    loadUsageInfo,
-    refreshUsageInfo,
+    // Usage functions (from shared context)
+    loadUsageInfo: refreshUsage,
+    refreshUsageInfo: refreshUsage,
 
-    // Funciones de generación
+    // Generation functions
     generateImages,
 
-    // Funciones de selección de imágenes
+    // Image selection functions
     handleImageSelect,
     selectAllImages,
 
-    // Función para manejar save/discard
+    // Save/discard function
     handleImagesProcessed,
 
-    // Funciones de utilidad
+    // Utility functions
     canGoToStep,
     getProgress,
 
-    // PERSISTENCE: Funciones expuestas para casos especiales
+    // PERSISTENCE: Exposed functions for special cases
     clearWorkflowState,
   };
 

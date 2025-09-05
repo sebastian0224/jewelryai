@@ -6,6 +6,7 @@ import { Download, Trash2, X } from "lucide-react";
 import { useState } from "react";
 import { deleteImagesAction } from "@/lib/actions/gallery-actions";
 import { useUser } from "@clerk/nextjs";
+import Image from "next/image";
 
 export function ImageViewModal({ isOpen, onClose, image, onImageDeleted }) {
   const { user } = useUser();
@@ -93,13 +94,18 @@ export function ImageViewModal({ isOpen, onClose, image, onImageDeleted }) {
         <div className="flex flex-col h-full sm:flex-row">
           {/* Main Image Container */}
           <div className="flex-1 bg-black flex items-center justify-center relative min-h-0">
-            <img
-              src={image.cloudinaryUrl || image.imageUrl}
-              alt={`Generated jewelry with ${
-                image.styleUsed || image.background
-              } background`}
-              className="w-90 h-full object-scale-down"
-            />
+            <div className="relative w-full h-full">
+              <Image
+                src={image.cloudinaryUrl || image.imageUrl}
+                alt={`Generated jewelry with ${
+                  image.styleUsed || image.background
+                } background`}
+                fill
+                className="object-scale-down"
+                sizes="(max-width: 768px) 100vw, 70vw"
+                priority
+              />
+            </div>
 
             {/* Desktop Action Buttons - Top Right */}
             <div className="hidden sm:flex absolute top-4 right-4 gap-2">

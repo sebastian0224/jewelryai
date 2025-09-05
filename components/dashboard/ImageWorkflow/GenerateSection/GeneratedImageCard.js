@@ -6,6 +6,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Download, ExternalLink } from "lucide-react";
 import { useState } from "react";
 import { ImageViewModal } from "@/components/dashboard/Gallery/ImageViewModal";
+import Image from "next/image";
 
 export function GeneratedImageCard({ image, isSelected, onSelect }) {
   const [showModal, setShowModal] = useState(false);
@@ -47,11 +48,12 @@ export function GeneratedImageCard({ image, isSelected, onSelect }) {
         }`}
       >
         <div className="aspect-square bg-[#F0F0F0] relative overflow-hidden">
-          <img
+          <Image
             src={image.imageUrl || "/placeholder.svg"}
             alt={`Generated jewelry with ${image.background} background`}
-            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-            loading="lazy"
+            fill
+            className="object-cover transition-transform duration-300 group-hover:scale-105"
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           />
 
           <div className="absolute top-3 left-3 z-20">
