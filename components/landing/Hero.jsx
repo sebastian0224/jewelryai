@@ -1,6 +1,3 @@
-import { Button } from "@/components/ui/button";
-import { SignUpButton } from "@clerk/nextjs";
-
 export default function Hero() {
   return (
     <section className="relative bg-gradient-to-br from-background via-background to-muted py-24 lg:py-40">
@@ -18,18 +15,7 @@ export default function Hero() {
             </p>
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <SignUpButton mode="modal">
-              <Button
-                size="lg"
-                className="bg-accent hover:bg-accent/90 text-accent-foreground px-10 py-4 text-lg"
-              >
-                Try JewelryAI Free
-              </Button>
-            </SignUpButton>
-          </div>
-
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-8 text-sm text-muted-foreground pt-4">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-8 text-sm text-muted-foreground pt-8">
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 bg-secondary rounded-full"></div>
               <span>No credit card required</span>
