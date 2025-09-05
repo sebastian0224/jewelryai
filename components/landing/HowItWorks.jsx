@@ -5,28 +5,28 @@ export default function HowItWorks() {
       title: "Upload",
       description:
         "Upload your jewelry photos directly to our secure platform. Supports JPG, PNG, and multiple file formats.",
-      image: "/jewelry-photo-upload-interface.jpg",
+      icon: "📤",
     },
     {
       step: "02",
       title: "Style",
       description:
         "Choose from professional backgrounds, lighting presets, and styling options that match your brand.",
-      image: "/jewelry-styling-options-interface.jpg",
+      icon: "🎨",
     },
     {
       step: "03",
       title: "Size",
       description:
         "Select your desired output dimensions and resolution. Perfect for web, print, or social media use.",
-      image: "/image-sizing-options-interface.jpg",
+      icon: "📏",
     },
     {
       step: "04",
       title: "Generate",
       description:
         "Our AI processes your image in seconds, delivering studio-quality results ready for immediate use.",
-      image: "/ai-processing-jewelry-photo-transformation.jpg",
+      icon: "✨",
     },
   ];
 
@@ -43,18 +43,15 @@ export default function HowItWorks() {
           </p>
         </div>
 
-        <div className="grid lg:grid-cols-4 gap-8">
+        <div className="grid lg:grid-cols-4 gap-8 relative">
           {steps.map((step, index) => (
-            <div key={index} className="text-center space-y-6">
+            <div key={index} className="text-center space-y-6 relative">
               <div className="relative">
-                <div className="bg-card rounded-xl p-6 shadow-sm">
-                  <img
-                    src={step.image || "/placeholder.svg"}
-                    alt={`Step ${step.step}: ${step.title}`}
-                    className="w-full h-40 object-cover rounded-lg"
-                  />
+                <div className="bg-card rounded-xl p-8 shadow-sm border border-border hover:shadow-md transition-shadow">
+                  <div className="text-6xl mb-4">{step.icon}</div>
+                  <div className="w-16 h-1 bg-gradient-to-r from-secondary to-accent mx-auto rounded-full"></div>
                 </div>
-                <div className="absolute -top-4 left-4 bg-secondary text-accent-foreground w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg">
+                <div className="absolute -top-4 left-4 bg-secondary text-accent-foreground w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg shadow-sm">
                   {step.step}
                 </div>
               </div>
@@ -69,8 +66,8 @@ export default function HowItWorks() {
               </div>
 
               {index < steps.length - 1 && (
-                <div className="hidden lg:block absolute top-1/2 -right-4 transform -translate-y-1/2">
-                  <div className="w-8 h-0.5 bg-border"></div>
+                <div className="hidden lg:block absolute top-20 -right-4 transform">
+                  <div className="text-2xl text-muted-foreground">→</div>
                 </div>
               )}
             </div>

@@ -1,4 +1,3 @@
-// components/Header.js
 import { SignInButton, SignUpButton } from "@clerk/nextjs";
 import Link from "next/link";
 
@@ -15,28 +14,6 @@ export default function Header() {
               </h1>
             </Link>
           </div>
-
-          {/* Navigation */}
-          <nav className="hidden md:flex space-x-8">
-            <a
-              href="#features"
-              className="text-muted-foreground hover:text-foreground font-medium transition-colors"
-            >
-              Features
-            </a>
-            <a
-              href="#pricing"
-              className="text-slate-600 hover:text-slate-900 font-medium"
-            >
-              Pricing
-            </a>
-            <a
-              href="#demo"
-              className="text-muted-foreground hover:text-foreground font-medium transition-colors"
-            >
-              Demo
-            </a>
-          </nav>
 
           {/* Auth Buttons */}
           <div className="flex items-center space-x-4">
