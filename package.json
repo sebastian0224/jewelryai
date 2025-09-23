@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@clerk/nextjs": "^6.31.3",
+    "@clerk/types": "^4.88.0",
     "@prisma/client": "^6.14.0",
     "@prisma/extension-accelerate": "^2.0.2",
     "@radix-ui/react-alert-dialog": "^1.1.15",
@@ -35,6 +36,8 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4",
+    "@types/node": "24.5.2",
+    "@types/react": "19.1.13",
     "eslint": "^9",
     "eslint-config-next": "15.5.0",
     "prisma": "^6.14.0",
