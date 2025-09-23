@@ -6,7 +6,7 @@ A sophisticated web application that transforms jewelry photography using artifi
 
 ## 🌟 Live Demo
 
-**[Visit Live Application →](your-deployment-url-here)**
+**[Visit Live Application →](https://jewelryai.vercel.app/)**
 
 ---
 
