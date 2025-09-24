@@ -10,8 +10,33 @@ import { UpdateUserUsage } from "./usage-manager";
 
 // Cambia a false cuando quieras usar Bria real
 const DEMO_MODE = false;
+type style = {
+  id: string;
+  name: string;
+  description: string;
+  preview: string;
+};
 
-const generateStylePrompt = (selectedStyle) => {
+type size = {
+  id: string;
+  name: string;
+  dimensions: string;
+  width: number;
+  height: number;
+  ratio: string;
+};
+
+type actionVariables = {
+  uploadedImage: string;
+  selectedStyle: style;
+  selectedSize: size;
+  userId: string;
+  originalImagePublicId: string;
+  remainingImages: number;
+};
+
+const generateStylePrompt = (selectedStyle: style) => {
+  //------------------
   const stylePrompts = {
     "luxury-gold":
       "elegant gold background, luxury jewelry display, warm golden lighting, premium showcase, sophisticated ambiance",
@@ -28,14 +53,15 @@ const generateStylePrompt = (selectedStyle) => {
   };
   return stylePrompts[selectedStyle.id] || stylePrompts["luxury-gold"];
 };
-export async function generateImagesAction(
+
+export async function generateImagesAction({
   uploadedImage,
   selectedStyle,
   selectedSize,
   userId,
   originalImagePublicId,
-  remainingImages
-) {
+  remainingImages,
+}: actionVariables) {
   try {
     if (!userId) {
       return { success: false, error: "User ID required" };
@@ -149,14 +175,11 @@ export async function generateImagesAction(
       };
     }
 
-    console.log("Transformed URL:", transformResult.transformedUrl);
-
-    // 🎯 PASAR EL NÚMERO EXACTO DE IMÁGENES DISPONIBLES
-    const briaResult = await changeBackgroundBria(
-      transformResult.transformedUrl,
-      stylePrompt,
-      remainingImages // Este número ya es dinámico
-    );
+    const briaResult = await changeBackgroundBria({
+      imageUrl: transformResult.transformedUrl,
+      prompt: stylePrompt,
+      remainingImages: remainingImages,
+    });
 
     if (!briaResult.success) {
       return { success: false, error: briaResult.error || "Generation failed" };
@@ -238,8 +261,11 @@ export async function generateImagesAction(
   }
 }
 
-// 🔧 ACTUALIZAR FUNCIÓN DE PLACEHOLDER PARA ACEPTAR CANTIDAD DINÁMICA
-const generatePlaceholderImages = (selectedStyle, selectedSize, count) => {
+const generatePlaceholderImages = (
+  selectedStyle: style,
+  selectedSize: size,
+  count: number
+) => {
   const { width, height } = selectedSize;
 
   const colors = {

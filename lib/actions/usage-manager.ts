@@ -37,7 +37,8 @@ function formatResetDate() {
 /**
  * Obtiene información completa del usage del usuario
  */
-export async function getUserUsage(userId) {
+
+export async function getUserUsage(userId: string) {
   try {
     if (!userId) {
       return {
@@ -113,7 +114,7 @@ export async function getUserUsage(userId) {
 /**
  * Incrementa el usage después de una generación exitosa
  */
-export async function UpdateUserUsage(userId, count) {
+export async function UpdateUserUsage(userId: string, count: number) {
   try {
     if (!userId) {
       return {

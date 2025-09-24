@@ -4,7 +4,17 @@ import Replicate from "replicate";
 
 const replicate = new Replicate();
 
-export async function changeBackgroundBria(imageUrl, prompt, remainingImages) {
+type ImageProps = {
+  imageUrl: string;
+  prompt: string;
+  remainingImages: number;
+};
+
+export async function changeBackgroundBria({
+  imageUrl,
+  prompt,
+  remainingImages,
+}: ImageProps) {
   try {
     // 🎯 GENERAR ENTRE 1 Y 4 IMÁGENES SEGÚN LO DISPONIBLE
     const imagesToGenerate = Math.min(Math.max(remainingImages, 1), 4); // Min 1, Max 4
@@ -37,29 +47,27 @@ export async function changeBackgroundBria(imageUrl, prompt, remainingImages) {
             })`
           );
 
-          const result = await replicate.run("bria/generate-background", {
-            input: {
-              fast: true,
-              sync: true,
-              image_url: imageUrl,
-              bg_prompt: prompt,
-              refine_prompt: true,
-              original_quality: true,
-              enhance_ref_image: true,
-            },
-          });
+          type BriaResult = {
+            image_url?: string;
+          };
+
+          const result: BriaResult = await replicate.run(
+            "bria/generate-background",
+            {
+              input: {
+                fast: true,
+                sync: true,
+                image_url: imageUrl,
+                bg_prompt: prompt,
+                refine_prompt: true,
+                original_quality: true,
+                enhance_ref_image: true,
+              },
+            }
+          );
 
           // Manejar diferentes formatos de respuesta de Bria
-          let processedUrl;
-          if (Array.isArray(result)) {
-            processedUrl = result[0]?.toString();
-          } else if (typeof result === "string") {
-            processedUrl = result;
-          } else if (result?.image_url) {
-            processedUrl = result.image_url.toString();
-          } else {
-            throw new Error(`Invalid Bria response format: ${typeof result}`);
-          }
+          let processedUrl: string = result.image_url;
 
           if (processedUrl && processedUrl.startsWith("http")) {
             imageUrls.push(processedUrl);

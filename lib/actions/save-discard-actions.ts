@@ -2,7 +2,15 @@
 
 import { saveSelectedImages, discardTemporaryImages } from "../cloudinary";
 
-export async function saveSelectedImagesAction(imageIds, userId) {
+type SaveImageProps = {
+  imageIds: [];
+  userId: string;
+};
+
+export async function saveSelectedImagesAction({
+  imageIds,
+  userId,
+}: SaveImageProps) {
   try {
     if (!userId) {
       return {
@@ -44,7 +52,7 @@ export async function saveSelectedImagesAction(imageIds, userId) {
   }
 }
 
-export async function discardAllImagesAction(userId) {
+export async function discardAllImagesAction(userId: string) {
   try {
     if (!userId) {
       return {

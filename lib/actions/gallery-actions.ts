@@ -4,7 +4,15 @@ import prisma from "@/lib/prisma";
 
 import { deleteImages } from "../cloudinary";
 
-export async function deleteImagesAction(imageIds, userId) {
+type DeleteImageProps = {
+  imageIds: [];
+  userId: string;
+};
+
+export async function deleteImagesAction({
+  imageIds,
+  userId,
+}: DeleteImageProps) {
   try {
     if (!userId) {
       return {
@@ -32,7 +40,7 @@ export async function deleteImagesAction(imageIds, userId) {
   }
 }
 
-export async function getUserImagesAction(userId) {
+export async function getUserImagesAction(userId: string) {
   try {
     if (!userId) {
       return { success: false, error: "User ID is required" };
@@ -41,7 +49,7 @@ export async function getUserImagesAction(userId) {
     const images = await prisma.processedImage.findMany({
       where: {
         userId: userId,
-        status: "saved", // ✅ Solo imágenes permanentes
+        status: "saved",
       },
       orderBy: { createdAt: "desc" },
     });

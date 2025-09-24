@@ -1,7 +1,12 @@
 import { Header } from "@/components/dashboard/Header";
 import { UsageProvider } from "@/components/dashboard/UsageContext";
+import React from "react";
 
-export default function DashboardLayout({ children }) {
+export default function DashboardLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
   return (
     <UsageProvider>
       <div className="min-h-screen bg-background">
